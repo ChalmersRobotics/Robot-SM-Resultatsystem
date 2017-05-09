@@ -1,0 +1,195 @@
+body {
+	margin: 0px;
+}
+
+#ground {
+	margin: 0.5em;
+	padding: 0px;
+	/*background: transparent;
+	width: 760px;
+	margin: 0 auto;*/
+}
+#menucontainer {
+	margin: 0px;
+	padding: 1em;
+	background: lightblue;
+	padding-bottom: 3px;
+	/*width: 760px;
+	margin: 0 auto;*/
+}
+#menucontainer .nofloat {
+	height: 1px;
+}
+#menucontainer .menulevel ul {
+	margin: 0px;
+	padding: 0px;
+}
+#menucontainer .menulevel li {
+	display: inline;
+	list-style: none;
+	float: left;
+	padding: 0 1em 0 0;
+	color: #000000;
+	font-family: Verdana, Arial;
+	font-size: 8pt;
+	height: 23px;
+	/*width: 75px;*/
+	overflow: hidden;
+}
+
+#content {
+	border: 5px lightblue solid;
+	padding: 0.5em;
+}
+
+#footer {
+	font-size: 0.7em;
+	color; #c0c0c0;
+}
+
+.nofloat {
+	clear: both;
+	/*height: 1px;
+	overflow: hidden;*/
+}
+.currentmenu {
+	font-weight: bold;
+}
+
+.roundrobin tbody tr td {
+	width: 100px;
+}
+.roundrobin tbody tr .enabled sub, .roundrobin tbody tr .enabled sup {
+	font-size: 1.2em;
+}
+.roundrobin tbody tr .enabled a {
+	display: block;
+	text-align: center;
+	text-decoration: none;
+}
+.roundrobin tbody tr .disabled {
+	background: #333333;
+}
+.roundrobin tbody tr .selected, #MatchesLeft .trselected {
+	-moz-box-shadow:inset 0 0 10px 0 #2222DD;
+    -webkit-box-shadow:inset 0 0 10px 0 #2222DD;
+    box-shadow:inset 0 0 10px 0 #2222DD;
+    border: 1px solid #000;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	#MatchesLeft .trselected .selected {
+		-webkit-box-shadow:inset 0 0 10px 0 #2222DD;
+		box-shadow:inset 0 0 10px 0 #2222DD;
+		border: 1px solid #000;
+	}
+}
+.roundrobinheader, .roundrobinsecondaryheader {
+	font-weight: bold;
+	background: #EEEEEE;
+}
+.roundrobinheader .headerselected {
+	border-top: 3px solid #2222DD;
+}
+.headersecondaryselected {
+	border-left: 3px solid #2222DD;
+}
+#RoundRobinTable {
+	float: left;
+}
+#MatchesLeft {
+	float: left;
+	border: 1px solid #c0c0c0;
+	margin-left: 1em;
+	padding: 0.5em;
+}
+#MatchesLeft p {
+	margin: 0;
+}
+#MatchesLeftSub {
+	display: block;
+	height: 400px;
+	overflow-y: scroll;
+}
+.roundrobin tbody tr td a img {
+	padding-right: 3px;
+}
+.roundrobinteamname {
+	color: #777777;
+	font-size: 0.9em;
+}
+
+#EnterResults {
+	/*clear: both;*/
+	float: left;
+	width: 350px;
+	display: block;
+	border: 1px solid #c0c0c0;
+	margin-left: 1em;
+	padding: 0.5em;
+}
+#EnterResults form textarea {
+	width: 280px;
+}
+#EnterResults .dateinput {
+	border: none;
+}
+#EnterResults h3 {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#ScoreTableHolder {
+	clear: both;
+	padding-top: 1em;
+}
+
+#save {
+	clear: both;
+}
+.under {
+	padding-bottom: 1em;
+}
+
+#ScoreboardDiv {
+	
+}
+#ScoreboardTable  {
+	
+}
+
+#WeightinRobotSelect select {
+	height: 300px;
+}
+
+
+.cover {
+	padding:      20px 30px;
+	border:       1px solid #dedede;
+	border-radius:4px;
+	background:   #f9f9f9;
+	box-shadow:   0px 0px 10px #a8a8a8;
+
+	/* centering */
+	position:     absolute;
+	top:          50%;
+	left:         50%;
+	margin-top:  -180px;
+	margin-left: -222px;
+}
+
+.lbjs {
+	/*float: left;*/
+}
+.lbjs:last-of-type {
+	margin-left: 20px;
+}
+
+#results {
+	/*float:right;
+	margin:20px;
+	background:#ccc;
+	padding:20px;*/
+	border:1px solid;
+}
+
+

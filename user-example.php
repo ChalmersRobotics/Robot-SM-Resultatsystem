@@ -1,0 +1,3 @@
+<?php
+$loginpassword = 'loginpassword';
+?>

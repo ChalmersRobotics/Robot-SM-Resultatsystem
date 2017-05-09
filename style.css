@@ -1,0 +1,40 @@
+#ground {
+	/*background: transparent;
+	width: 760px;
+	margin: 0 auto;*/
+}
+#menucontainer {
+	/*background: transparent;
+	width: 760px;
+	margin: 0 auto;*/
+}
+#menucontainer .menulevel li {
+	display: inline;
+	list-style: none;
+	float: left;
+	padding: 0 1em 0 0;
+	color: #000000;
+	font-family: Verdana, Arial;
+	font-size: 8pt;
+	height: 23px;
+	/*width: 75px;*/
+	overflow: hidden;
+}
+
+#content {
+	border: 2px red solid;
+}
+
+#footer {
+	font-size: 0.7em;
+	color; #c0c0c0;
+}
+
+.nofloat {
+	clear: both;
+	/*height: 1px;
+	overflow: hidden;*/
+}
+.currentmenu {
+	font-weight: bold;
+}

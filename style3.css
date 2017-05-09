@@ -1,0 +1,247 @@
+body {
+	margin: 0px;
+	font-family: verdana;
+}
+
+h1, h2, h3, h4, h5 {
+	font-family: verdana;
+}
+
+#ground {
+	margin: 0.5em;
+	padding: 0px;
+	/*background: transparent;
+	width: 760px;
+	margin: 0 auto;*/
+}
+#menucontainer {
+	margin: 0px;
+	padding: 1em;
+	background: lightblue;
+	padding-bottom: 3px;
+	/*width: 760px;
+	margin: 0 auto;*/
+}
+#menucontainer .nofloat {
+	height: 1px;
+}
+#menucontainer .menulevel ul {
+	margin: 0px;
+	padding: 0px;
+}
+#menucontainer .menulevel li {
+	display: inline;
+	list-style: none;
+	float: left;
+	padding: 0 1em 0 0;
+	color: #000000;
+	font-family: Verdana, Arial;
+	font-size: 8pt;
+	height: 23px;
+	/*width: 75px;*/
+	overflow: hidden;
+}
+
+#content {
+	border: 5px lightblue solid;
+	padding: 0.5em;
+}
+
+#footer {
+	font-size: 0.7em;
+	color; #c0c0c0;
+}
+
+.nofloat {
+	clear: both;
+	/*height: 1px;
+	overflow: hidden;*/
+}
+.currentmenu {
+	font-weight: bold;
+}
+
+.roundrobin tbody tr td {
+	width: 100px;
+}
+.roundrobin tbody tr .enabled sub, .roundrobin tbody tr .enabled sup {
+	font-size: 1.2em;
+}
+.roundrobin tbody tr .enabled a {
+	display: block;
+	text-align: center;
+	text-decoration: none;
+}
+.roundrobin tbody tr .disabled {
+	background: #dddddd;
+}
+.roundrobin tbody tr .selected, #MatchesLeft .trselected {
+	-moz-box-shadow:inset 0 0 10px 0 #2222DD;
+    -webkit-box-shadow:inset 0 0 10px 0 #2222DD;
+    box-shadow:inset 0 0 10px 0 #2222DD;
+    border: 1px solid #000;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	#MatchesLeft .trselected .selected {
+		-webkit-box-shadow:inset 0 0 10px 0 #2222DD;
+		box-shadow:inset 0 0 10px 0 #2222DD;
+		border: 1px solid #000;
+	}
+}
+.roundrobinheader, .roundrobinsecondaryheader {
+	font-weight: bold;
+	background: #EEEEEE;
+}
+.roundrobinheader .headerselected {
+	border-top: 3px solid #2222DD;
+}
+.headersecondaryselected {
+	border-left: 3px solid #2222DD;
+}
+#RoundRobinTable {
+	float: left;
+}
+#MatchesLeft {
+	float: left;
+	border: 1px solid #c0c0c0;
+	margin-left: 1em;
+	padding: 0.5em;
+}
+#MatchesLeft p {
+	margin: 0;
+}
+#MatchesLeftSub {
+	display: block;
+	height: 400px;
+	overflow-y: scroll;
+}
+.roundrobin tbody tr td a img {
+	padding-right: 3px;
+}
+
+#EnterResults {
+	/*clear: both;*/
+	float: left;
+	width: 350px;
+	display: block;
+	border: 1px solid #c0c0c0;
+	margin-left: 1em;
+	padding: 0.5em;
+}
+#EnterResults form textarea {
+	width: 280px;
+}
+#EnterResults .dateinput {
+	border: none;
+}
+#EnterResults h3 {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#ScoreTableHolder {
+	clear: both;
+	padding-top: 1em;
+}
+
+#save {
+	clear: both;
+}
+.under {
+	padding-bottom: 1em;
+}
+
+#ScoreboardDiv {
+	
+}
+#ScoreboardTable  {
+	width: 100%;
+	font-size: 1.6em;
+}
+.ScoreboardHeadertd {
+	font-weight: bold;
+	background: #dddddd;
+}
+.ScoreboardHeaderSecondarytd {
+	font-weight: bold;
+	background: #dddddd;
+}
+
+#RoundRobinTable {
+	width: 100%;
+}
+.arrowimg {
+	width: 50px;
+}
+#sponsors {
+	padding-top: 2em;
+	width: 100%;
+}
+#sponsors td {
+	border: none;
+	width: 33%;
+	text-align: center;
+}
+#sponsors td img {
+	height: 65px;
+}
+#RoundRobinTable tbody tr td sub, #RoundRobinTable tbody tr td sup {
+	font-size: 1.5em;
+}
+.roundrobinteamname {
+	color: #777777;
+	font-size: 0.9em;
+}
+.roundrobinheader td {
+	vertical-align: top;
+}
+
+#logotype img {
+	width: 100%;
+	max-width: 1000px;
+}
+
+#RobotVsRobot {
+	width: 100%;
+}
+
+.VsHeader td {
+	font-size: 4em;
+}
+.VsHeader .VsHeaderVS {
+	font-size: 6em;
+	font-family: courier;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+.TeamVsHeader {
+	font-size: 2em;
+}
+
+.FinishedHeader td {
+	font-size: 3em;
+}
+
+.ScoreHeader td {
+	font-size: 5em;
+}
+
+.ScoreHeader .AlignCenter {
+	font-size: 2em;
+}
+
+.AlignLeft {
+	text-align: left;
+}
+.AlignCenter {
+	text-align: center;
+}
+.AlignRight {
+	text-align: right;
+}
+
+.ImageHeader img {
+	height: 300px;
+}
+
