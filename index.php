@@ -120,7 +120,7 @@ if (!$con)
 		$sSponsors = '';
 		$sSponsors .= '<table id="sponsors">';
 		$sSponsors .= '<tr>';
-		$sSponsors .= '<td><img src="CatAB.png" /></td>';
+		$sSponsors .= '<td><img src="Farnell-element-14.png" /></td>';
 		$sSponsors .= '<td><img src="Parker.png" /></td>';
 		$sSponsors .= '</tr>';
 		$sSponsors .= '</table>';
