@@ -1081,67 +1081,75 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<br />
 									<input type="submit" name="teamaction" value="Select team" />
 								</form>
-								<h2>Team-info:</h2>
-								<form action="?page=teamadministration&sub=teams" method="post">
-									<?php if ($TeamId == "") { ?>
+								<div id="TeamInfo">
+									<h2>Team-info:</h2>
+									<form action="?page=teamadministration&sub=teams" method="post">
+										<?php if ($TeamId == "") { ?>
+											<input type="hidden" name="TeamId" value="" />
+											<span>Team-Id: <span>New team<br />
+											<span>Name: <span><input type="text" name="teamname" style="width: 200px;" value="" /><br />
+											<span>Created: <span><input type="text" name="teamcreated" style="width: 200px;" value="<?php echo date("Y-m-d H:i:s"); ?>" /><br />
+											<span>Telephone: <span><input type="text" name="teamtelephone" style="width: 200px;" value="" /><br />
+											<span>Mail: <span><input type="text" name="teammail" style="width: 200px;" value="" /><br />
+											<span>URL: <span><input type="text" name="teamurl" style="width: 200px;" value="" /><br />
+											<span>Organisation: <span><input type="text" name="teamorganisation" style="width: 200px;" value="" /><br />
+											<span>City: <span><input type="text" name="teamcity" style="width: 200px;" value="" /><br />
+											<span>Background: <span><textarea name="teambackground" cols="40" rows="9" /></textarea><br />
+											<input type="submit" name="teamaction" value="Save team" />
+										<?php } else { 
+											$oTeam = new Team();
+											$oTeam->LoadTeam($TeamId); ?>
+											<input type="hidden" name="TeamId" value="<?php echo $oTeam->id; ?>" />
+											<span>Team-Id: <span><?php echo $oTeam->id; ?><br />
+											<span>Name: <span><input type="text" name="teamname" style="width: 200px;" value="<?php echo $oTeam->Name; ?>" /><br />
+											<span>Created: <span><input type="text" name="teamcreated" style="width: 200px;" value="<?php echo $oTeam->Created; ?>" /><br />
+											<span>Telephone: <span><input type="text" name="teamtelephone" style="width: 200px;" value="<?php echo $oTeam->Telephone; ?>" /><br />
+											<span>Mail: <span><input type="text" name="teammail" style="width: 200px;" value="<?php echo $oTeam->Mail; ?>" /><br />
+											<span>URL: <span><input type="text" name="teamurl" style="width: 200px;" value="<?php echo $oTeam->URL; ?>" /><br />
+											<span>Organisation: <span><input type="text" name="teamorganisation" style="width: 200px;" value="<?php echo $oTeam->Organisation; ?>" /><br />
+											<span>City: <span><input type="text" name="teamcity" style="width: 200px;" value="<?php echo $oTeam->City; ?>" /><br />
+											<span>Background: <span><textarea name="teambackground" cols="40" rows="9" /><?php echo $oTeam->Background; ?></textarea><br />
+											<input type="submit" name="teamaction" value="Save team" />
+										<?php } ?>
+									</form>
+									<form action="?page=teamadministration&sub=teams" method="post">
 										<input type="hidden" name="TeamId" value="" />
-										<span>Team-Id: <span>New team<br />
-										<span>Name: <span><input type="text" name="teamname" style="width: 200px;" value="" /><br />
-										<span>Created: <span><input type="text" name="teamcreated" style="width: 200px;" value="<?php echo date("Y-m-d H:i:s"); ?>" /><br />
-										<span>Telephone: <span><input type="text" name="teamtelephone" style="width: 200px;" value="" /><br />
-										<span>Mail: <span><input type="text" name="teammail" style="width: 200px;" value="" /><br />
-										<span>URL: <span><input type="text" name="teamurl" style="width: 200px;" value="" /><br />
-										<span>Organisation: <span><input type="text" name="teamorganisation" style="width: 200px;" value="" /><br />
-										<span>City: <span><input type="text" name="teamcity" style="width: 200px;" value="" /><br />
-										<span>Background: <span><textarea name="teambackground" cols="40" rows="9" /></textarea><br />
-										<input type="submit" name="teamaction" value="Save team" />
-									<?php } else { 
-										$oTeam = new Team();
-										$oTeam->LoadTeam($TeamId); ?>
-										<input type="hidden" name="TeamId" value="<?php echo $oTeam->id; ?>" />
-										<span>Team-Id: <span><?php echo $oTeam->id; ?><br />
-										<span>Name: <span><input type="text" name="teamname" style="width: 200px;" value="<?php echo $oTeam->Name; ?>" /><br />
-										<span>Created: <span><input type="text" name="teamcreated" style="width: 200px;" value="<?php echo $oTeam->Created; ?>" /><br />
-										<span>Telephone: <span><input type="text" name="teamtelephone" style="width: 200px;" value="<?php echo $oTeam->Telephone; ?>" /><br />
-										<span>Mail: <span><input type="text" name="teammail" style="width: 200px;" value="<?php echo $oTeam->Mail; ?>" /><br />
-										<span>URL: <span><input type="text" name="teamurl" style="width: 200px;" value="<?php echo $oTeam->URL; ?>" /><br />
-										<span>Organisation: <span><input type="text" name="teamorganisation" style="width: 200px;" value="<?php echo $oTeam->Organisation; ?>" /><br />
-										<span>City: <span><input type="text" name="teamcity" style="width: 200px;" value="<?php echo $oTeam->City; ?>" /><br />
-										<span>Background: <span><textarea name="teambackground" cols="40" rows="9" /><?php echo $oTeam->Background; ?></textarea><br />
-										<input type="submit" name="teamaction" value="Save team" />
-									<?php } ?>
-								</form>
-								<form action="?page=teamadministration&sub=teams" method="post">
-									<input type="hidden" name="TeamId" value="" />
-									<input type="submit" name="teamaction" value="New team" />
-								</form>
-								<h2>Team participants:</h2>
-								<form action="?page=teamadministration&sub=teams" method="post">
-									<input type="hidden" name="TeamId" value="<?php echo $TeamId; ?>" />
-									<select multiple name="TeamParticipantId" style="width: 100%; height: 250px;">
-										<?php $oTmp = new Team();
-										$oTmp->LoadTeam($TeamId);
-										$oTmp->LoadParticipants();
-										foreach ($oTmp->Participants as &$tParticipant) { ?>
-												<option value="<?php echo $tParticipant->id; ?>"><?php echo $tParticipant->Name; ?></option>
-										<?php } ?>
-									</select>
-									<br />
-									<input type="submit" name="participantaction" value="Remove from team" />
-								</form>
-								<h2>Global participants:</h2>
-								<form action="?page=teamadministration&sub=teams" method="post">
-									<input type="hidden" name="TeamId" value="<?php echo $TeamId; ?>" />
-									<select size="6" class="searchbox" name="GlobalParticipantId" style="width: 100%; height: 250px;">
-										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadParticipants();
-										foreach ($oTmp->Participants as &$tParticipant) { ?>
-												<option value="<?php echo $tParticipant->id; ?>"><?php echo $tParticipant->Name; ?></option>
-										<?php } ?>
-									</select>
-									<br />
-									<input type="submit" name="participantaction" value="Add to team" />
-								</form>
+										<input type="submit" name="teamaction" value="New team" />
+									</form>
+								</div>
+								<div id="TeamParticipants">
+									<div id="TeamParticipantsLocal">
+										<h2>Team participants:</h2>
+										<form action="?page=teamadministration&sub=teams" method="post">
+											<input type="hidden" name="TeamId" value="<?php echo $TeamId; ?>" />
+											<select multiple name="TeamParticipantId" style="width: 100%; height: 250px;">
+												<?php $oTmp = new Team();
+												$oTmp->LoadTeam($TeamId);
+												$oTmp->LoadParticipants();
+												foreach ($oTmp->Participants as &$tParticipant) { ?>
+														<option value="<?php echo $tParticipant->id; ?>"><?php echo $tParticipant->Name; ?></option>
+												<?php } ?>
+											</select>
+											<br />
+											<input type="submit" name="participantaction" value="Remove from team" />
+										</form>
+									</div>
+									<div id="TeamParticipantsGlobal">
+										<h2>Global participants:</h2>
+										<form action="?page=teamadministration&sub=teams" method="post">
+											<input type="hidden" name="TeamId" value="<?php echo $TeamId; ?>" />
+											<select size="6" class="searchbox" name="GlobalParticipantId" style="width: 100%; height: 250px;">
+												<?php $oTmp = new ManyCollections();
+												$oTmp->LoadParticipants();
+												foreach ($oTmp->Participants as &$tParticipant) { ?>
+														<option value="<?php echo $tParticipant->id; ?>"><?php echo $tParticipant->Name; ?></option>
+												<?php } ?>
+											</select>
+											<br />
+											<input type="submit" name="participantaction" value="Add to team" />
+										</form>
+									</div>
+								</div>
 								<?php
 								break;
 							case 'participants':?>

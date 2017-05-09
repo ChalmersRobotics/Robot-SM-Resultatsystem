@@ -192,4 +192,12 @@ body {
 	border:1px solid;
 }
 
+#TeamInfo, #TeamParticipants {
+	float: left;
+	padding: 1em;
+}
 
+#TeamParticipantsLocal, #TeamParticipantsGlobal {
+	float: left;
+	padding: 1em;
+}

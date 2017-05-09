@@ -24,7 +24,7 @@ if (!$con)
 
 		<meta name="url" content="http://gremalm.se/robotsm/" />
 
-		<meta name="title" content="Robot-SM 2016" />
+		<meta name="title" content="Robot-SM 2017" />
 		<meta name="keywords" content="Robot-SM" />
 		<meta name="description" content="Robot-SM" />
 		<meta name="robots" content="NOINDEX, NOFOLLOW" />
@@ -64,7 +64,7 @@ if (!$con)
 		//]]>
 		</script>
 
-		<title>Robot-SM 2016</title>
+		<title>Robot-SM 2017</title>
 	</head>
 		<?php
 		$NavigationLevel = 0;
@@ -187,7 +187,7 @@ if (!$con)
 		<div id="ground">
 			<?php if ($sArgNoLogo != 1) { ?>
 			<div id="logotype">
-				<img src="robot-sm2016-logotype.png" />
+				<img src="robot-sm2017-logotype.png" />
 			</div>
 			<?php } ?>
 			<?php if ($sArgNoHeader != 1) { ?>
