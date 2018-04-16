@@ -196,8 +196,16 @@ body {
 	float: left;
 	padding: 1em;
 }
-
 #TeamParticipantsLocal, #TeamParticipantsGlobal {
+	float: left;
+	padding: 1em;
+}
+
+#RobotInfo, #RobotsTeam, #RobotsGames {
+	float: left;
+	padding: 1em;
+}
+#RobotsTeamLocal, #RobotsTeamGlobal, #RobotsGamesLocal, #RobotsGamesGlobal {
 	float: left;
 	padding: 1em;
 }

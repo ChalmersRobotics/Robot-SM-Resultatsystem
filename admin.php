@@ -655,112 +655,126 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<br />
 									<input type="submit" name="robotaction" value="Select robot" />
 								</form>
-								<h2>Robot-info:</h2>
-								<form action="?page=teamadministration&sub=robots" method="post">
-									<?php if ($RobotId == "") { ?>
+								<div id="RobotInfo">
+									<h2>Robot-info:</h2>
+									<form action="?page=teamadministration&sub=robots" method="post">
+										<?php if ($RobotId == "") { ?>
+											<input type="hidden" name="RobotId" value="" />
+											<span>Robot-Id: <span>New robot<br />
+											<span>Name: <span><input type="text" name="robotname" style="width: 200px;" value="" /><br />
+											<span>Created: <span><input type="text" name="robotcreated" style="width: 200px;" value="<?php echo date("Y-m-d H:i:s"); ?>" /><br />
+											<span>RobotClass: <span><input type="text" name="robotclass" style="width: 200px;" value="" /><br />
+											<span>RobotClassname: <span><input type="text" name="robotclassname" style="width: 200px;" value="" /><br />
+											<span>Weight: <span><input type="text" name="robotweight" style="width: 200px;" value="" /><br />
+											<span>Width: <span><input type="text" name="robotwidth" style="width: 200px;" value="" /><br />
+											<span>Depth: <span><input type="text" name="robotdepth" style="width: 200px;" value="" /><br />
+											<span>Height: <span><input type="text" name="robotheight" style="width: 200px;" value="" /><br />
+											<span>Image: <span><input type="text" name="robotimage" style="width: 200px;" value="" /><br />
+											<span>Background: <span><textarea name="robotbackground" cols="40" rows="9" /></textarea><br />
+											<span>Weighin date: <span><input type="text" name="robotweighindate" style="width: 200px;" value="" /><br />
+											<input type="submit" name="robotaction" value="Save robot" />
+										<?php } else { 
+											$oRobot = new Robot();
+											$oRobot->LoadRobot($RobotId); ?>
+											<input type="hidden" name="RobotId" value="<?php echo $oRobot->id; ?>" />
+											<span>Robot-Id: <span><?php echo $oRobot->id; ?><br />
+											<span>Name: <span><input type="text" name="robotname" style="width: 200px;" value="<?php echo $oRobot->Name; ?>" /><br />
+											<span>Created: <span><input type="text" name="robotcreated" style="width: 200px;" value="<?php echo $oRobot->Created; ?>" /><br />
+											<span>RobotClass: <span><input type="text" name="robotclass" style="width: 200px;" value="<?php echo $oRobot->RobotClass; ?>" /><br />
+											<span>RobotClassname: <span><input type="text" name="robotclassname" style="width: 200px;" value="<?php echo $oRobot->RobotClassname; ?>" /><br />
+											<span>Weight: <span><input type="text" name="robotweight" style="width: 200px;" value="<?php echo $oRobot->Weight; ?>" /><br />
+											<span>Width: <span><input type="text" name="robotwidth" style="width: 200px;" value="<?php echo $oRobot->Width; ?>" /><br />
+											<span>Depth: <span><input type="text" name="robotdepth" style="width: 200px;" value="<?php echo $oRobot->Depth; ?>" /><br />
+											<span>Height: <span><input type="text" name="robotheight" style="width: 200px;" value="<?php echo $oRobot->Height; ?>" /><br />
+											<span>Image: <span><input type="text" name="robotimage" style="width: 200px;" value="<?php echo $oRobot->Image; ?>" /><br />
+											<span>Background: <span><textarea name="robotbackground" cols="40" rows="9" /><?php echo $oRobot->Background; ?></textarea><br />
+											<span>Weighin date: <span><input type="text" name="robotweighindate" style="width: 200px;" value="<?php echo $oRobot->WeighinDate; ?>" /><br />
+											<input type="submit" name="robotaction" value="Save robot" />
+										<?php } ?>
+									</form>
+									<form action="?page=teamadministration&sub=robots" method="post">
 										<input type="hidden" name="RobotId" value="" />
-										<span>Robot-Id: <span>New robot<br />
-										<span>Name: <span><input type="text" name="robotname" style="width: 200px;" value="" /><br />
-										<span>Created: <span><input type="text" name="robotcreated" style="width: 200px;" value="<?php echo date("Y-m-d H:i:s"); ?>" /><br />
-										<span>RobotClass: <span><input type="text" name="robotclass" style="width: 200px;" value="" /><br />
-										<span>RobotClassname: <span><input type="text" name="robotclassname" style="width: 200px;" value="" /><br />
-										<span>Weight: <span><input type="text" name="robotweight" style="width: 200px;" value="" /><br />
-										<span>Width: <span><input type="text" name="robotwidth" style="width: 200px;" value="" /><br />
-										<span>Depth: <span><input type="text" name="robotdepth" style="width: 200px;" value="" /><br />
-										<span>Height: <span><input type="text" name="robotheight" style="width: 200px;" value="" /><br />
-										<span>Image: <span><input type="text" name="robotimage" style="width: 200px;" value="" /><br />
-										<span>Background: <span><textarea name="robotbackground" cols="40" rows="9" /></textarea><br />
-										<span>Weighin date: <span><input type="text" name="robotweighindate" style="width: 200px;" value="" /><br />
-										<input type="submit" name="robotaction" value="Save robot" />
-									<?php } else { 
-										$oRobot = new Robot();
-										$oRobot->LoadRobot($RobotId); ?>
-										<input type="hidden" name="RobotId" value="<?php echo $oRobot->id; ?>" />
-										<span>Robot-Id: <span><?php echo $oRobot->id; ?><br />
-										<span>Name: <span><input type="text" name="robotname" style="width: 200px;" value="<?php echo $oRobot->Name; ?>" /><br />
-										<span>Created: <span><input type="text" name="robotcreated" style="width: 200px;" value="<?php echo $oRobot->Created; ?>" /><br />
-										<span>RobotClass: <span><input type="text" name="robotclass" style="width: 200px;" value="<?php echo $oRobot->RobotClass; ?>" /><br />
-										<span>RobotClassname: <span><input type="text" name="robotclassname" style="width: 200px;" value="<?php echo $oRobot->RobotClassname; ?>" /><br />
-										<span>Weight: <span><input type="text" name="robotweight" style="width: 200px;" value="<?php echo $oRobot->Weight; ?>" /><br />
-										<span>Width: <span><input type="text" name="robotwidth" style="width: 200px;" value="<?php echo $oRobot->Width; ?>" /><br />
-										<span>Depth: <span><input type="text" name="robotdepth" style="width: 200px;" value="<?php echo $oRobot->Depth; ?>" /><br />
-										<span>Height: <span><input type="text" name="robotheight" style="width: 200px;" value="<?php echo $oRobot->Height; ?>" /><br />
-										<span>Image: <span><input type="text" name="robotimage" style="width: 200px;" value="<?php echo $oRobot->Image; ?>" /><br />
-										<span>Background: <span><textarea name="robotbackground" cols="40" rows="9" /><?php echo $oRobot->Background; ?></textarea><br />
-										<span>Weighin date: <span><input type="text" name="robotweighindate" style="width: 200px;" value="<?php echo $oRobot->WeighinDate; ?>" /><br />
-										<input type="submit" name="robotaction" value="Save robot" />
-									<?php } ?>
-								</form>
-								<form action="?page=teamadministration&sub=robots" method="post">
-									<input type="hidden" name="RobotId" value="" />
-									<input type="submit" name="robotaction" value="New robot" />
-								</form>
-								<h2>Robots team:</h2>
-								<form action="?page=teamadministration&sub=robots" method="post">
-									<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
-									<select multiple name="RobotsTeamId" style="width: 100%; height: 250px;">
-										<?php $oTmp = new Robot();
-										$oTmp->LoadRobot($RobotId);
-										$oTmp->LoadTeam(); ?>
-											<option value="<?php echo $oTmp->oTeam->id; ?>"><?php echo $oTmp->oTeam->Name; ?></option>
-									</select>
-									<br />
-									<input type="submit" name="teamaction" value="Remove from robot" />
-								</form>
-								<h2>Global teams:</h2>
-								<form action="?page=teamadministration&sub=robots" method="post">
-									<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
-									<select size="6" class="searchbox" name="GlobalTeamsId" style="width: 100%; height: 250px;">
-										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadTeams();
-										foreach ($oTmp->Teams as &$tTeam) { ?>
-												<option value="<?php echo $tTeam->id; ?>"><?php echo $tTeam->Name; ?></option>
-										<?php } ?>
-									</select>
-									<br />
-									<input type="submit" name="teamaction" value="Add to robot" />
-								</form>
-								<h2>Robots games:</h2>
-								<form action="?page=teamadministration&sub=robots" method="post">
-									<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
-									<select multiple name="RobotsRobotId" style="width: 100%; height: 250px;">
-										<?php $oTmp = new Robot();
-										$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot ON games.id=rel_game_robot.game_id WHERE rel_game_robot.robot_id='%s'",
-														mysql_real_escape_string($RobotId));
-										$result = mysql_query($query) or die();
-										while ($row = mysql_fetch_assoc($result)) { ?>
-											<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
-										<?php } ?>
-										<?php $oTmp = new Robot();
-										$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot_doubleelemination ON games.id=rel_game_robot_doubleelemination.game_id WHERE rel_game_robot_doubleelemination.robot_id='%s'",
-														mysql_real_escape_string($RobotId));
-										$result = mysql_query($query) or die();
-										while ($row = mysql_fetch_assoc($result)) { ?>
-											<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
-										<?php } ?>
-									</select>
-									<br />
-									<input type="submit" name="gameaction" value="Remove from robot" />
-								</form>
-								<h2>Global games:</h2>
-								<form action="?page=teamadministration&sub=robots" method="post">
-									<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
-									<select size="6" class="searchbox" name="GlobalRobotsId" style="width: 100%; height: 250px;">
-										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadTournaments();
-										foreach ($oTmp->Events as &$tEvent) {
-											$tEvent->LoadTournaments();
-											foreach ($tEvent->Tournaments as &$tTournament) {
-												$tTournament->LoadGames();
-												foreach ($tTournament->Games as &$tGame) { ?>
-													<option value="<?php echo $tGame->id; ?>"><?php echo $tEvent->Name.' - '.$tTournament->Name.' - '.$tGame->Name; ?></option>
-										<?php 	}
-											}
-										}?>
-									</select>
-									<br />
-									<input type="submit" name="gameaction" value="Add to robot" />
-								</form>
+										<input type="submit" name="robotaction" value="New robot" />
+									</form>
+								</div>
+								<div id="RobotsTeam">
+									<div id="RobotsTeamLocal">
+										<h2>Robots team:</h2>
+										<form action="?page=teamadministration&sub=robots" method="post">
+											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
+											<select multiple name="RobotsTeamId" style="width: 100%; height: 250px;">
+												<?php $oTmp = new Robot();
+												$oTmp->LoadRobot($RobotId);
+												$oTmp->LoadTeam(); ?>
+													<option value="<?php echo $oTmp->oTeam->id; ?>"><?php echo $oTmp->oTeam->Name; ?></option>
+											</select>
+											<br />
+											<input type="submit" name="teamaction" value="Remove from robot" />
+										</form>
+									</div>
+									<div id="RobotsTeamGlobal">
+										<h2>Global teams:</h2>
+										<form action="?page=teamadministration&sub=robots" method="post">
+											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
+											<select size="6" class="searchbox" name="GlobalTeamsId" style="width: 100%; height: 250px;">
+												<?php $oTmp = new ManyCollections();
+												$oTmp->LoadTeams();
+												foreach ($oTmp->Teams as &$tTeam) { ?>
+														<option value="<?php echo $tTeam->id; ?>"><?php echo $tTeam->Name; ?></option>
+												<?php } ?>
+											</select>
+											<br />
+											<input type="submit" name="teamaction" value="Add to robot" />
+										</form>
+									</div>
+								</div>
+								<div id="RobotsGames">
+									<div id="RobotsGamesLocal">
+										<h2>Robots games:</h2>
+										<form action="?page=teamadministration&sub=robots" method="post">
+											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
+											<select multiple name="RobotsRobotId" style="width: 100%; height: 250px;">
+												<?php $oTmp = new Robot();
+												$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot ON games.id=rel_game_robot.game_id WHERE rel_game_robot.robot_id='%s'",
+																mysql_real_escape_string($RobotId));
+												$result = mysql_query($query) or die();
+												while ($row = mysql_fetch_assoc($result)) { ?>
+													<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+												<?php } ?>
+												<?php $oTmp = new Robot();
+												$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot_doubleelemination ON games.id=rel_game_robot_doubleelemination.game_id WHERE rel_game_robot_doubleelemination.robot_id='%s'",
+																mysql_real_escape_string($RobotId));
+												$result = mysql_query($query) or die();
+												while ($row = mysql_fetch_assoc($result)) { ?>
+													<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+												<?php } ?>
+											</select>
+											<br />
+											<input type="submit" name="gameaction" value="Remove from robot" />
+										</form>
+									</div>
+									<div id="RobotsGamesGlobal">
+										<h2>Global games:</h2>
+										<form action="?page=teamadministration&sub=robots" method="post">
+											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
+											<select size="6" class="searchbox" name="GlobalRobotsId" style="width: 100%; height: 250px;">
+												<?php $oTmp = new ManyCollections();
+												$oTmp->LoadTournaments();
+												foreach ($oTmp->Events as &$tEvent) {
+													$tEvent->LoadTournaments();
+													foreach ($tEvent->Tournaments as &$tTournament) {
+														$tTournament->LoadGames();
+														foreach ($tTournament->Games as &$tGame) { ?>
+															<option value="<?php echo $tGame->id; ?>"><?php echo $tEvent->Name.' - '.$tTournament->Name.' - '.$tGame->Name; ?></option>
+												<?php 	}
+													}
+												}?>
+											</select>
+											<br />
+											<input type="submit" name="gameaction" value="Add to robot" />
+										</form>
+									</div>
+								</div>
 								<?php
 								break;
 							case 'weighin':
