@@ -24,7 +24,7 @@ if (!$con)
 
 		<meta name="url" content="http://gremalm.se/robotsm/" />
 
-		<meta name="title" content="Robot-SM 2017" />
+		<meta name="title" content="Robot-SM 2018" />
 		<meta name="keywords" content="Robot-SM" />
 		<meta name="description" content="Robot-SM" />
 		<meta name="robots" content="NOINDEX, NOFOLLOW" />
@@ -64,7 +64,7 @@ if (!$con)
 		//]]>
 		</script>
 
-		<title>Robot-SM 2017</title>
+		<title>Robot-SM 2018</title>
 	</head>
 		<?php
 		$NavigationLevel = 0;
@@ -120,8 +120,11 @@ if (!$con)
 		$sSponsors = '';
 		$sSponsors .= '<table id="sponsors">';
 		$sSponsors .= '<tr>';
-		$sSponsors .= '<td><img src="Farnell-element-14.png" /></td>';
-		$sSponsors .= '<td><img src="Parker.png" /></td>';
+		$sSponsors .= '<td><img src="combine.png" /></td>';
+		$sSponsors .= '<td><img src="consat.png" /></td>';
+		$sSponsors .= '<td><img src="parker.jpg" /></td>';
+		$sSponsors .= '<td><img src="smarteye.png" /></td>';
+		$sSponsors .= '<td><img src="smc.png" /></td>';
 		$sSponsors .= '</tr>';
 		$sSponsors .= '</table>';
 
@@ -187,7 +190,7 @@ if (!$con)
 		<div id="ground">
 			<?php if ($sArgNoLogo != 1) { ?>
 			<div id="logotype">
-				<img src="robot-sm2017-logotype.png" />
+				<img src="robotsm_2018_banner.png" />
 			</div>
 			<?php } ?>
 			<?php if ($sArgNoHeader != 1) { ?>

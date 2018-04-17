@@ -115,7 +115,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									break;
 								case 'Delete event':
 									$query = sprintf("DELETE FROM events WHERE id='%s'",
-										mysqli_real_escape_string($db, $NavigationEvent));
+										mysqli_real_escape_string($con, $NavigationEvent));
 									mysqli_query($con, $query) or die();
 									break;
 							}
@@ -138,8 +138,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									
 									//Search and find the TournamentId
 									$query = sprintf("SELECT * FROM tournaments WHERE name='%s' AND created='%s'",
-													mysqli_real_escape_string($db, $_POST['tournamentname']),
-													mysqli_real_escape_string($db, $_POST['tournamentcreated']));
+													mysqli_real_escape_string($con, $_POST['tournamentname']),
+													mysqli_real_escape_string($con, $_POST['tournamentcreated']));
 									$result = mysqli_query($con, $query) or die();
 									while ($row = mysqli_fetch_assoc($result)) {
 										$tTournamentId = $row['id'];
@@ -179,9 +179,9 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									
 									//Search and find the GameId
 									$query = sprintf("SELECT * FROM games WHERE name='%s' AND created='%s' AND gametype='%s'",
-													mysqli_real_escape_string($db, $_POST['gamename']),
-													mysqli_real_escape_string($db, $_POST['gamecreated']),
-													mysqli_real_escape_string($db, $_POST['gametype']));
+													mysqli_real_escape_string($con, $_POST['gamename']),
+													mysqli_real_escape_string($con, $_POST['gamecreated']),
+													mysqli_real_escape_string($con, $_POST['gametype']));
 									$result = mysqli_query($con, $query) or die();
 									while ($row = mysqli_fetch_assoc($result)) {
 										$tGameId = $row['id'];
@@ -486,9 +486,9 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										if (is_numeric($_POST['reldoubleeliminationid'])) {
 											//echo "Remove from team".$_POST['RobotsRobotId'];
 											$query = sprintf("UPDATE rel_game_robot_doubleelemination SET position='%s', overunder='%s' WHERE id='%s'",
-												mysqli_real_escape_string($db, $_POST['Position']),
-												mysqli_real_escape_string($db, $_POST['overunder']),
-												mysqli_real_escape_string($db, $_POST['reldoubleeliminationid']));
+												mysqli_real_escape_string($con, $_POST['Position']),
+												mysqli_real_escape_string($con, $_POST['overunder']),
+												mysqli_real_escape_string($con, $_POST['reldoubleeliminationid']));
 											mysqli_query($con, $query) or die();
 										}
 									}
@@ -511,7 +511,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									if ($tmpGame->Gametype == "doubleelimination") {
 										echo '<h3>doubleelimination</h3>';
 										$query = sprintf("SELECT * FROM rel_game_robot_doubleelemination WHERE game_id='%s' ORDER BY position, overunder",
-														mysqli_real_escape_string($db, $tmpGame->id));
+														mysqli_real_escape_string($con, $tmpGame->id));
 										$result = mysqli_query($con, $query) or die();
 										while ($row = mysqli_fetch_assoc($result)) {
 											$tmpRobot = new Robot();
@@ -574,8 +574,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpRobot->SaveRobot($con);
 										//Search and find the RobotId
 										$query = sprintf("SELECT * FROM robots WHERE robot_name='%s' AND created='%s'",
-														mysqli_real_escape_string($db, $tmpRobot->Name),
-														mysqli_real_escape_string($db, $tmpRobot->Created));
+														mysqli_real_escape_string($con, $tmpRobot->Name),
+														mysqli_real_escape_string($con, $tmpRobot->Created));
 										$result = mysqli_query($con, $query) or die();
 										while ($row = mysqli_fetch_assoc($result)) {
 											$RobotId = $row['robot_id'];
@@ -737,14 +737,14 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<select multiple name="RobotsRobotId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new Robot();
 												$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot ON games.id=rel_game_robot.game_id WHERE rel_game_robot.robot_id='%s'",
-																mysqli_real_escape_string($db, $RobotId));
+																mysqli_real_escape_string($con, $RobotId));
 												$result = mysqli_query($con, $query) or die();
 												while ($row = mysqli_fetch_assoc($result)) { ?>
 													<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
 												<?php } ?>
 												<?php $oTmp = new Robot();
 												$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot_doubleelemination ON games.id=rel_game_robot_doubleelemination.game_id WHERE rel_game_robot_doubleelemination.robot_id='%s'",
-																mysqli_real_escape_string($db, $RobotId));
+																mysqli_real_escape_string($con, $RobotId));
 												$result = mysqli_query($con, $query) or die();
 												while ($row = mysqli_fetch_assoc($result)) { ?>
 													<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
@@ -1041,8 +1041,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpTeam->SaveTeam($con);
 										//Search and find the GameId
 										$query = sprintf("SELECT * FROM teams WHERE team_name='%s' AND created='%s'",
-														mysqli_real_escape_string($db, $tmpTeam->Name),
-														mysqli_real_escape_string($db, $tmpTeam->Created));
+														mysqli_real_escape_string($con, $tmpTeam->Name),
+														mysqli_real_escape_string($con, $tmpTeam->Created));
 										$result = mysqli_query($con, $query) or die();
 										while ($row = mysqli_fetch_assoc($result)) {
 											$TeamId = $row['team_id'];
@@ -1185,8 +1185,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpParticipant->SaveParticipant($con);
 										//Search and find the GameId
 										$query = sprintf("SELECT * FROM participants WHERE participant_name='%s' AND created='%s'",
-														mysqli_real_escape_string($db, $tmpParticipant->Name),
-														mysqli_real_escape_string($db, $tmpParticipant->Created));
+														mysqli_real_escape_string($con, $tmpParticipant->Name),
+														mysqli_real_escape_string($con, $tmpParticipant->Created));
 										$result = mysqli_query($con, $query) or die();
 										while ($row = mysqli_fetch_assoc($result)) {
 											$ParticipantId = $row['participant_id'];
@@ -1285,7 +1285,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$oMatch->Comment = $_POST['matchcomment'];
 											$oMatch->SaveMatch($con);
 											$query = sprintf("SELECT * FROM matchroundrobin WHERE started='%s'",
-															mysqli_real_escape_string($db, $oMatch->Started));
+															mysqli_real_escape_string($con, $oMatch->Started));
 											$result = mysqli_query($con, $query) or die();
 											while ($row = mysqli_fetch_assoc($result)) {
 												$MatchMatchId = $row['id'];
@@ -1319,7 +1319,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$oMatch->Score = $_POST['matchscore'];
 											$oMatch->SaveMatch($con);
 											$query = sprintf("SELECT * FROM rel_game_scoreboard_matches WHERE started='%s'",
-															mysqli_real_escape_string($db, $oMatch->Started));
+															mysqli_real_escape_string($con, $oMatch->Started));
 											$result = mysqli_query($con, $query) or die();
 											while ($row = mysqli_fetch_assoc($result)) {
 												$MatchMatchId = $row['id'];
