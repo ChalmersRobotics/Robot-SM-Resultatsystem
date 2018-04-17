@@ -5,13 +5,13 @@ date_default_timezone_set('Europe/Stockholm');
 include 'db.php';
 include 'user.php';
 
-$con = mysql_connect($dbhost, $dbuser, $dbpass);
+global $con;
+$con = mysqli_connect($dbhost, $dbuser, $dbpass, $dbdatabase);
 if (!$con)
-  {
-  die('Could not connect: ' . mysql_error());
-  }
+{
+  die('Could not connect: ' . mysqli_error());
+}
 
-@mysql_select_db($dbdatabase) or die( "Unable to select database");
 @require_once ('robotclasses.php');
 
 
@@ -25,7 +25,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 <html lang="sv" xml:lang="sv" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Language" content="sv" />
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Type" content="text/html" />
+		<meta charset="UTF-8" />
 		
 		<meta name="language" content="sv" />
 		
@@ -103,19 +104,19 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									$tmpEvent = new Event();
 									$tmpEvent->Name = $_POST['eventname'];
 									$tmpEvent->Created = $_POST['eventcreated'];
-									$tmpEvent->SaveEvent();
+									$tmpEvent->SaveEvent($con);
 									break;
 								case 'Save event':
 									$tmpEvent = new Event();
-									$tmpEvent->LoadEvent($NavigationEvent);
+									$tmpEvent->LoadEvent($con, $NavigationEvent);
 									$tmpEvent->Name = $_POST['eventname'];
 									$tmpEvent->Created = $_POST['eventcreated'];
-									$tmpEvent->SaveEvent();
+									$tmpEvent->SaveEvent($con);
 									break;
 								case 'Delete event':
 									$query = sprintf("DELETE FROM events WHERE id='%s'",
-										mysql_real_escape_string($NavigationEvent));
-									mysql_query($query) or die();
+										mysqli_real_escape_string($db, $NavigationEvent));
+									mysqli_query($con, $query) or die();
 									break;
 							}
 						}
@@ -133,29 +134,29 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									$tmpTournament = new Tournament();
 									$tmpTournament->Name = $_POST['tournamentname'];
 									$tmpTournament->Created = $_POST['tournamentcreated'];
-									$tmpTournament->SaveTournament();
+									$tmpTournament->SaveTournament($con);
 									
 									//Search and find the TournamentId
 									$query = sprintf("SELECT * FROM tournaments WHERE name='%s' AND created='%s'",
-													mysql_real_escape_string($_POST['tournamentname']),
-													mysql_real_escape_string($_POST['tournamentcreated']));
-									$result = mysql_query($query) or die();
-									while ($row = mysql_fetch_assoc($result)) {
+													mysqli_real_escape_string($db, $_POST['tournamentname']),
+													mysqli_real_escape_string($db, $_POST['tournamentcreated']));
+									$result = mysqli_query($con, $query) or die();
+									while ($row = mysqli_fetch_assoc($result)) {
 										$tTournamentId = $row['id'];
 									}
 									
 									//Add relation to Event
-									RelEventTournamentNew($NavigationEvent, $tTournamentId);
+									RelEventTournamentNew($con, $NavigationEvent, $tTournamentId);
 									break;
 								case 'Save tournament':
 									$tmpTournament = new Tournament();
-									$tmpTournament->LoadTournament($NavigationTournament);
+									$tmpTournament->LoadTournament($con, $NavigationTournament);
 									$tmpTournament->Name = $_POST['tournamentname'];
 									$tmpTournament->Created = $_POST['tournamentcreated'];
-									$tmpTournament->SaveTournament();
+									$tmpTournament->SaveTournament($con);
 									break;
 								case 'Delete tournament':
-									RelEventTournamentDelete($NavigationEvent, $NavigationTournament);
+									RelEventTournamentDelete($con, $NavigationEvent, $NavigationTournament);
 									break;
 							}
 						}
@@ -174,31 +175,31 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									$tmpGame->Name = $_POST['gamename'];
 									$tmpGame->Created = $_POST['gamecreated'];
 									$tmpGame->Gametype = $_POST['gametype'];
-									$tmpGame->SaveGame();
+									$tmpGame->SaveGame($con);
 									
 									//Search and find the GameId
 									$query = sprintf("SELECT * FROM games WHERE name='%s' AND created='%s' AND gametype='%s'",
-													mysql_real_escape_string($_POST['gamename']),
-													mysql_real_escape_string($_POST['gamecreated']),
-													mysql_real_escape_string($_POST['gametype']));
-									$result = mysql_query($query) or die();
-									while ($row = mysql_fetch_assoc($result)) {
+													mysqli_real_escape_string($db, $_POST['gamename']),
+													mysqli_real_escape_string($db, $_POST['gamecreated']),
+													mysqli_real_escape_string($db, $_POST['gametype']));
+									$result = mysqli_query($con, $query) or die();
+									while ($row = mysqli_fetch_assoc($result)) {
 										$tGameId = $row['id'];
 									}
 									echo $tGameId;
 									//Add relation to Event
-									RelTournamentGameNew($NavigationTournament, $tGameId);
+									RelTournamentGameNew($con, $NavigationTournament, $tGameId);
 									break;
 								case 'Save game':
 									$tmpGame = new Game();
-									$tmpGame->LoadGame($NavigationGame);
+									$tmpGame->LoadGame($con, $NavigationGame);
 									$tmpGame->Name = $_POST['gamename'];
 									$tmpGame->Created = $_POST['gamecreated'];
 									$tmpGame->Gametype = $_POST['gametype'];
-									$tmpGame->SaveGame();
+									$tmpGame->SaveGame($con);
 									break;
 								case 'Delete game':
-									RelTournamentGameDelete($NavigationTournament, $NavigationGame);
+									RelTournamentGameDelete($con, $NavigationTournament, $NavigationGame);
 									break;
 							}
 						}
@@ -270,7 +271,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 							<ul>
 						<?php
 						$Many = new ManyCollections();
-						$Many->LoadTournaments();
+						$Many->LoadTournaments($con);
 						foreach ($Many->Events as &$tEvent) {
 							//echo $tEvent->Name;?>
 							<li class="<?php echo $NavigationEvent == $tEvent->id ? 'currentmenu' : ''; ?>"><a href="?page=competitonadministration&event=<?php echo $tEvent->id?>" title="<?php echo $tEvent->Name?>" alt ="<?php echo $tEvent->Name?>"><?php echo $tEvent->Name?></a></li>
@@ -288,8 +289,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 								<ul>
 							<?php
 							$tmpEvent = new Event();
-							$tmpEvent->LoadEvent($NavigationEvent);
-							$tmpEvent->LoadTournaments();
+							$tmpEvent->LoadEvent($con, $NavigationEvent);
+							$tmpEvent->LoadTournaments($con);
 							foreach ($tmpEvent->Tournaments as &$tTournament) {
 								//echo $tTournament->Name;?>
 								<li class="<?php echo $NavigationTournament == $tTournament->id ? 'currentmenu' : ''; ?>"><a href="?page=competitonadministration&event=<?php echo $NavigationEvent."&tournament=".$tTournament->id?>" title="<?php echo $tTournament->Name?>" alt ="<?php echo $tTournament->Name?>"><?php echo $tTournament->Name?></a></li>
@@ -307,8 +308,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<ul>
 								<?php
 								$tmpTournament = new Tournament();
-								$tmpTournament->LoadTournament($NavigationTournament);
-								$tmpTournament->LoadGames();
+								$tmpTournament->LoadTournament($con, $NavigationTournament);
+								$tmpTournament->LoadGames($con);
 								foreach ($tmpTournament->Games as &$tGame) {
 									//echo $tGame->Name;?>
 									<li class="<?php echo $NavigationGame == $tGame->id ? 'currentmenu' : ''; ?>"><a href="?page=competitonadministration&event=<?php echo $NavigationEvent."&tournament=".$NavigationTournament."&game=".$tGame->id?>" title="<?php echo $tGame->Name?>" alt ="<?php echo $tGame->Name?>"><?php echo $tGame->Name?></a></li>
@@ -342,7 +343,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 							<ul>
 						<?php
 						$Many = new ManyCollections();
-						$Many->LoadTournaments();
+						$Many->LoadTournaments($con);
 						foreach ($Many->Events as &$tEvent) {
 							//echo $tEvent->Name;?>
 							<li class="<?php echo $NavigationEvent == $tEvent->id ? 'currentmenu' : ''; ?>"><a href="?page=scoreadministration&event=<?php echo $tEvent->id?>" title="<?php echo $tEvent->Name?>" alt ="<?php echo $tEvent->Name?>"><?php echo $tEvent->Name?></a></li>
@@ -359,8 +360,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 								<ul>
 							<?php
 							$tmpEvent = new Event();
-							$tmpEvent->LoadEvent($NavigationEvent);
-							$tmpEvent->LoadTournaments();
+							$tmpEvent->LoadEvent($con, $NavigationEvent);
+							$tmpEvent->LoadTournaments($con);
 							foreach ($tmpEvent->Tournaments as &$tTournament) {
 								//echo $tTournament->Name;?>
 								<li class="<?php echo $NavigationTournament == $tTournament->id ? 'currentmenu' : ''; ?>"><a href="?page=scoreadministration&event=<?php echo $NavigationEvent."&tournament=".$tTournament->id?>" title="<?php echo $tTournament->Name?>" alt ="<?php echo $tTournament->Name?>"><?php echo $tTournament->Name?></a></li>
@@ -377,8 +378,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<ul>
 								<?php
 								$tmpTournament = new Tournament();
-								$tmpTournament->LoadTournament($NavigationTournament);
-								$tmpTournament->LoadGames();
+								$tmpTournament->LoadTournament($con, $NavigationTournament);
+								$tmpTournament->LoadGames($con);
 								foreach ($tmpTournament->Games as &$tGame) {
 									//echo $tGame->Name;?>
 									<li class="<?php echo $NavigationGame == $tGame->id ? 'currentmenu' : ''; ?>"><a href="?page=scoreadministration&event=<?php echo $NavigationEvent."&tournament=".$NavigationTournament."&game=".$tGame->id?>" title="<?php echo $tGame->Name?>" alt ="<?php echo $tGame->Name?>"><?php echo $tGame->Name?></a></li>
@@ -415,7 +416,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<?php
 								} else {
 									$tmpEvent = new Event();
-									$tmpEvent->LoadEvent($NavigationEvent); ?>
+									$tmpEvent->LoadEvent($con, $NavigationEvent); ?>
 									<form id="SetEvent" action="?page=competitonadministration&event=<?php echo $NavigationEvent ?>" method="post">
 										<span>Id: <?php echo $NavigationEvent ?><span><br />
 										<span>Name of event: <span><input type="text" name="eventname" style="width: 200px;" value="<?php echo $tmpEvent->Name; ?>" /><br />
@@ -438,7 +439,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<?php
 								} else {
 									$tmpTournament = new Tournament();
-									$tmpTournament->LoadTournament($NavigationTournament); ?>
+									$tmpTournament->LoadTournament($con, $NavigationTournament); ?>
 									<form id="SetTournament" action="?page=competitonadministration&event=<?php echo $NavigationEvent."&tournament=".$NavigationTournament ?>" method="post">
 										<span>Id: <?php echo $NavigationTournament ?><span><br />
 										<span>Name of tournament: <span><input type="text" name="tournamentname" style="width: 200px;" value="<?php echo $tmpTournament->Name; ?>" /><br />
@@ -466,7 +467,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<?php
 								} else {
 									$tmpGame = new Game();
-									$tmpGame->LoadGame($NavigationGame); ?>
+									$tmpGame->LoadGame($con, $NavigationGame); ?>
 									<form id="SetGame" action="?page=competitonadministration&event=<?php echo $NavigationEvent."&tournament=".$NavigationTournament."&game=".$NavigationGame ?>" method="post">
 										<span>Id: <?php echo $NavigationGame ?></span><br />
 										<span>Name of game: </span><input type="text" name="gamename" style="width: 200px;" value="<?php echo $tmpGame->Name; ?>" /><br />
@@ -485,10 +486,10 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										if (is_numeric($_POST['reldoubleeliminationid'])) {
 											//echo "Remove from team".$_POST['RobotsRobotId'];
 											$query = sprintf("UPDATE rel_game_robot_doubleelemination SET position='%s', overunder='%s' WHERE id='%s'",
-												mysql_real_escape_string($_POST['Position']),
-												mysql_real_escape_string($_POST['overunder']),
-												mysql_real_escape_string($_POST['reldoubleeliminationid']));
-											mysql_query($query) or die();
+												mysqli_real_escape_string($db, $_POST['Position']),
+												mysqli_real_escape_string($db, $_POST['overunder']),
+												mysqli_real_escape_string($db, $_POST['reldoubleeliminationid']));
+											mysqli_query($con, $query) or die();
 										}
 									}
 									/* Save scoreboard */
@@ -503,18 +504,18 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$tmpScoreboardsColumn->Name = $_POST['Namee'];
 											$tmpScoreboardsColumn->Position = $_POST['Position'];
 											$tmpScoreboardsColumn->Gameid = $tmpGame->id;
-											$tmpScoreboardsColumn->SaveColumn();
+											$tmpScoreboardsColumn->SaveColumn($con);
 										}
 									}
 									
 									if ($tmpGame->Gametype == "doubleelimination") {
 										echo '<h3>doubleelimination</h3>';
 										$query = sprintf("SELECT * FROM rel_game_robot_doubleelemination WHERE game_id='%s' ORDER BY position, overunder",
-														mysql_real_escape_string($tmpGame->id));
-										$result = mysql_query($query) or die();
-										while ($row = mysql_fetch_assoc($result)) {
+														mysqli_real_escape_string($db, $tmpGame->id));
+										$result = mysqli_query($con, $query) or die();
+										while ($row = mysqli_fetch_assoc($result)) {
 											$tmpRobot = new Robot();
-											$tmpRobot->LoadRobot($row['robot_id']);
+											$tmpRobot->LoadRobot($con, $row['robot_id']);
 											?>
 											<form id="SetGame2" <?php if($row['overunder'] == 1){echo ' class="under"';}else{echo '';};?> action="?page=competitonadministration&event=<?php echo $NavigationEvent."&tournament=".$NavigationTournament."&game=".$NavigationGame ?>" method="post">
 												<input type="hidden" name="reldoubleeliminationid" value="<?php echo $row['id']; ?>"><span>Pos: </span><input type="text" name="Position" style="width: 20px;" value="<?php echo $row['position']; ?>" /> <?php echo $tmpRobot->Name; ?> <input type="checkbox" name="overunder" value="1"<?php if($row['overunder'] == 1){echo ' checked="checked"';}else{echo '';};?> />Under <input type="submit" name="gameaction" value="Save" />
@@ -525,7 +526,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									}
 									if ($tmpGame->Gametype == "scoreboard") {
 										echo '<h3>Scoreboard-Columns</h3>';
-										$tmpGame->LoadColumns();
+										$tmpGame->LoadColumns($con);
 										foreach ($tmpGame->ScoreboardsColumns as &$tColumn) {
 											?>
 											<form id="SetGame2" action="?page=competitonadministration&event=<?php echo $NavigationEvent."&tournament=".$NavigationTournament."&game=".$NavigationGame ?>" method="post">
@@ -570,18 +571,18 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpRobot->Image = $_POST['robotimage'];
 										$tmpRobot->Background = $_POST['robotbackground'];
 										$tmpRobot->WeighinDate = $_POST['robotweighindate'];
-										$tmpRobot->SaveRobot();
+										$tmpRobot->SaveRobot($con);
 										//Search and find the RobotId
 										$query = sprintf("SELECT * FROM robots WHERE robot_name='%s' AND created='%s'",
-														mysql_real_escape_string($tmpRobot->Name),
-														mysql_real_escape_string($tmpRobot->Created));
-										$result = mysql_query($query) or die();
-										while ($row = mysql_fetch_assoc($result)) {
+														mysqli_real_escape_string($db, $tmpRobot->Name),
+														mysqli_real_escape_string($db, $tmpRobot->Created));
+										$result = mysqli_query($con, $query) or die();
+										while ($row = mysqli_fetch_assoc($result)) {
 											$RobotId = $row['robot_id'];
 										}
 									} else {
 										$tmpRobot = new Robot();
-										$tmpRobot->LoadRobot($RobotId);
+										$tmpRobot->LoadRobot($con, $RobotId);
 										$tmpRobot->Name = $_POST['robotname'];
 										$tmpRobot->Created = $_POST['robotcreated'];
 										$tmpRobot->RobotClass = $_POST['robotclass'];
@@ -593,30 +594,30 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpRobot->Image = $_POST['robotimage'];
 										$tmpRobot->Background = $_POST['robotbackground'];
 										$tmpRobot->WeighinDate = $_POST['robotweighindate'];
-										$tmpRobot->SaveRobot();
+										$tmpRobot->SaveRobot($con);
 									}
 								}
 								if ($_POST['teamaction'] == "Add to robot") {
 									if (is_numeric($_POST['GlobalTeamsId'])) {
 										//echo "Add to team".$_POST['GlobalTeamsId'];
-										RelRobotTeamNew($RobotId, $_POST['GlobalTeamsId']);
+										RelRobotTeamNew($con, $RobotId, $_POST['GlobalTeamsId']);
 									}
 								}
 								if ($_POST['teamaction'] == "Remove from robot") {
 									if (is_numeric($_POST['RobotsTeamId'])) {
 										//echo "Remove from team".$_POST['RobotsTeamId'];
-										RelTeamParticipantDelete($RobotId, $_POST['RobotsTeamId']);
+										RelTeamParticipantDelete($con, $RobotId, $_POST['RobotsTeamId']);
 									}
 								}
 								if ($_POST['gameaction'] == "Add to robot") {
 									if (is_numeric($_POST['GlobalRobotsId'])) {
 										//echo "Add to team".$_POST['GlobalRobotsId'];
 										$TempGame = new Game();
-										$TempGame->LoadGame($_POST['GlobalRobotsId']);
+										$TempGame->LoadGame($con, $_POST['GlobalRobotsId']);
 										if ($TempGame->Gametype == "doubleelimination") {
-											RelGameRobotDoubleEleminationNew($_POST['GlobalRobotsId'], $RobotId);
+											RelGameRobotDoubleEleminationNew($con, $_POST['GlobalRobotsId'], $RobotId);
 										} else {
-											RelGameRobotNew($_POST['GlobalRobotsId'], $RobotId);
+											RelGameRobotNew($con, $_POST['GlobalRobotsId'], $RobotId);
 										}
 									}
 								}
@@ -624,11 +625,11 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									if (is_numeric($_POST['RobotsRobotId'])) {
 										//echo "Remove from team".$_POST['RobotsRobotId'];
 										$TempGame = new Game();
-										$TempGame->LoadGame($_POST['RobotsRobotId']);
+										$TempGame->LoadGame($con, $_POST['RobotsRobotId']);
 										if ($TempGame->Gametype == "doubleelimination") {
-											RelGameRobotDoubleEleminationDelete($_POST['RobotsRobotId'], $RobotId);
+											RelGameRobotDoubleEleminationDelete($con, $_POST['RobotsRobotId'], $RobotId);
 										} else {
-											RelGameRobotDelete($_POST['RobotsRobotId'], $RobotId);
+											RelGameRobotDelete($con, $_POST['RobotsRobotId'], $RobotId);
 										}
 									}
 								}
@@ -636,7 +637,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 								<form id="robotselect" action="?page=teamadministration&sub=robots" method="post">
 									<select size="6" class="searchbox" name="RobotId" style="width: 300px; height: 250px;">
 										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadRobots();
+										$oTmp->LoadRobots($con);
 										foreach ($oTmp->Robots as &$tRobot) {
 											if ($tRobot->id == $RobotId) { ?>
 												<option value="<?php echo $tRobot->id; ?>" selected="selected"><?php echo $tRobot->Name; ?></option>
@@ -675,7 +676,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="submit" name="robotaction" value="Save robot" />
 										<?php } else { 
 											$oRobot = new Robot();
-											$oRobot->LoadRobot($RobotId); ?>
+											$oRobot->LoadRobot($con, $RobotId); ?>
 											<input type="hidden" name="RobotId" value="<?php echo $oRobot->id; ?>" />
 											<span>Robot-Id: <span><?php echo $oRobot->id; ?><br />
 											<span>Name: <span><input type="text" name="robotname" style="width: 200px;" value="<?php echo $oRobot->Name; ?>" /><br />
@@ -704,8 +705,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
 											<select multiple name="RobotsTeamId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new Robot();
-												$oTmp->LoadRobot($RobotId);
-												$oTmp->LoadTeam(); ?>
+												$oTmp->LoadRobot($con, $RobotId);
+												$oTmp->LoadTeam($con); ?>
 													<option value="<?php echo $oTmp->oTeam->id; ?>"><?php echo $oTmp->oTeam->Name; ?></option>
 											</select>
 											<br />
@@ -718,7 +719,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
 											<select size="6" class="searchbox" name="GlobalTeamsId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new ManyCollections();
-												$oTmp->LoadTeams();
+												$oTmp->LoadTeams($con);
 												foreach ($oTmp->Teams as &$tTeam) { ?>
 														<option value="<?php echo $tTeam->id; ?>"><?php echo $tTeam->Name; ?></option>
 												<?php } ?>
@@ -736,16 +737,16 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<select multiple name="RobotsRobotId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new Robot();
 												$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot ON games.id=rel_game_robot.game_id WHERE rel_game_robot.robot_id='%s'",
-																mysql_real_escape_string($RobotId));
-												$result = mysql_query($query) or die();
-												while ($row = mysql_fetch_assoc($result)) { ?>
+																mysqli_real_escape_string($db, $RobotId));
+												$result = mysqli_query($con, $query) or die();
+												while ($row = mysqli_fetch_assoc($result)) { ?>
 													<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
 												<?php } ?>
 												<?php $oTmp = new Robot();
 												$query = sprintf("SELECT games.id, games.name, games.created, games.gametype FROM games INNER JOIN rel_game_robot_doubleelemination ON games.id=rel_game_robot_doubleelemination.game_id WHERE rel_game_robot_doubleelemination.robot_id='%s'",
-																mysql_real_escape_string($RobotId));
-												$result = mysql_query($query) or die();
-												while ($row = mysql_fetch_assoc($result)) { ?>
+																mysqli_real_escape_string($db, $RobotId));
+												$result = mysqli_query($con, $query) or die();
+												while ($row = mysqli_fetch_assoc($result)) { ?>
 													<option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
 												<?php } ?>
 											</select>
@@ -759,11 +760,11 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="hidden" name="RobotId" value="<?php echo $RobotId; ?>" />
 											<select size="6" class="searchbox" name="GlobalRobotsId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new ManyCollections();
-												$oTmp->LoadTournaments();
+												$oTmp->LoadTournaments($con);
 												foreach ($oTmp->Events as &$tEvent) {
-													$tEvent->LoadTournaments();
+													$tEvent->LoadTournaments($con);
 													foreach ($tEvent->Tournaments as &$tTournament) {
-														$tTournament->LoadGames();
+														$tTournament->LoadGames($con);
 														foreach ($tTournament->Games as &$tGame) { ?>
 															<option value="<?php echo $tGame->id; ?>"><?php echo $tEvent->Name.' - '.$tTournament->Name.' - '.$tGame->Name; ?></option>
 												<?php 	}
@@ -799,17 +800,17 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 								if ($_POST['weighinaction'] == "Weighin robot") {
 									if (is_numeric($WeighinRobotId)) {
 										$oRobot = new Robot();
-										$oRobot->LoadRobot($WeighinRobotId);
+										$oRobot->LoadRobot($con, $WeighinRobotId);
 										$oRobot->WeighinDate = date("Y-m-d H:i:s");
-										$oRobot->SaveRobot();
+										$oRobot->SaveRobot($con);
 									}
 								}
 								if ($_POST['weighinaction'] == "Remove robot") {
 									if (is_numeric($WeighinRobotId)) {
 										$oRobot = new Robot();
-										$oRobot->LoadRobot($WeighinRobotId);
+										$oRobot->LoadRobot($con, $WeighinRobotId);
 										$oRobot->WeighinDate = '';
-										$oRobot->SaveRobot();
+										$oRobot->SaveRobot($con);
 									}
 								}
 
@@ -817,7 +818,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									echo '<h1>weighinaction Save robot</h1>';
 									if ($WeighinRobotId > 0) {
 										$tmpRobot = new Robot();
-										$tmpRobot->LoadRobot($WeighinRobotId);
+										$tmpRobot->LoadRobot($con, $WeighinRobotId);
 										$tmpRobot->Name = $_POST['robotname'];
 										$tmpRobot->Created = $_POST['robotcreated'];
 										$tmpRobot->RobotClass = $_POST['robotclass'];
@@ -829,7 +830,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpRobot->Image = $_POST['robotimage'];
 										$tmpRobot->Background = $_POST['robotbackground'];
 										$tmpRobot->WeighinDate = $_POST['robotweighindate'];
-										$tmpRobot->SaveRobot();
+										$tmpRobot->SaveRobot($con);
 									}
 								}
 
@@ -837,9 +838,9 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 								<form id="TournamentSelect" action="?page=teamadministration&sub=weighin" method="post" onclick="document.forms['TournamentSelect'].submit();">
 									<select multiple name="WeighinTournamentId" style="width: 100%;">
 										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadTournaments();
+										$oTmp->LoadTournaments($con);
 										foreach ($oTmp->Events as &$tEvent) {
-											$tEvent->LoadTournaments();
+											$tEvent->LoadTournaments($con);
 											foreach ($tEvent->Tournaments as &$tTournament) {
 												if ($tTournament->id == $WeighinTournamentId) { ?>
 													<option value="<?php echo $tTournament->id; ?>" selected="selected"><?php echo $tEvent->Name.' - '.$tTournament->Name; ?></option>
@@ -855,14 +856,14 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 								<?php
 								if ($WeighinTournamentId > 0 ) {
 									$oTournament = new Tournament();
-									$oTournament->LoadTournament($WeighinTournamentId);
+									$oTournament->LoadTournament($con, $WeighinTournamentId);
 									echo '<h2>'.$oTournament->Name.'</h2>';
 
-									$oTournament->LoadRobots();
+									$oTournament->LoadRobots($con);
 									$RobotsUnweight = new Collection();
 									$RobotsWeight = new Collection();
 									foreach ($oTournament->Robots as &$tRobot) {
-										$tRobot->LoadTeam();
+										$tRobot->LoadTeam($con);
 										if (empty($tRobot->WeighinDate)) {
 											$RobotsUnweight->addItem($tRobot);
 										} else {
@@ -935,8 +936,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<?php
 									if ($WeighinRobotId > 0) {
 										$oRobot = new Robot();
-										$oRobot->LoadRobot($WeighinRobotId);
-										$oRobot->LoadTeam();
+										$oRobot->LoadRobot($con, $WeighinRobotId);
+										$oRobot->LoadTeam($con);
 
 										echo '<h2>Robot - '.$oRobot->Name.' ['.$oRobot->oTeam->Name.']</h2>';
 									?>
@@ -1037,18 +1038,18 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpTeam->Organisation = $_POST['teamorganisation'];
 										$tmpTeam->City = $_POST['teamcity'];
 										$tmpTeam->Background = $_POST['teambackground'];
-										$tmpTeam->SaveTeam();
+										$tmpTeam->SaveTeam($con);
 										//Search and find the GameId
 										$query = sprintf("SELECT * FROM teams WHERE team_name='%s' AND created='%s'",
-														mysql_real_escape_string($tmpTeam->Name),
-														mysql_real_escape_string($tmpTeam->Created));
-										$result = mysql_query($query) or die();
-										while ($row = mysql_fetch_assoc($result)) {
+														mysqli_real_escape_string($db, $tmpTeam->Name),
+														mysqli_real_escape_string($db, $tmpTeam->Created));
+										$result = mysqli_query($con, $query) or die();
+										while ($row = mysqli_fetch_assoc($result)) {
 											$TeamId = $row['team_id'];
 										}
 									} else {
 										$tmpTeam = new Team();
-										$tmpTeam->LoadTeam($TeamId);
+										$tmpTeam->LoadTeam($con, $TeamId);
 										$tmpTeam->Name = $_POST['teamname'];
 										$tmpTeam->Created = $_POST['teamcreated'];
 										$tmpTeam->Telephone = $_POST['teamtelephone'];
@@ -1057,26 +1058,26 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpTeam->Organisation = $_POST['teamorganisation'];
 										$tmpTeam->City = $_POST['teamcity'];
 										$tmpTeam->Background = $_POST['teambackground'];
-										$tmpTeam->SaveTeam();
+										$tmpTeam->SaveTeam($con);
 									}
 								}
 								if ($_POST['participantaction'] == "Add to team") {
 									if (is_numeric($_POST['GlobalParticipantId'])) {
 										//echo "Add to team".$_POST['GlobalParticipantId'];
-										RelTeamParticipantNew($TeamId, $_POST['GlobalParticipantId']);
+										RelTeamParticipantNew($con, $TeamId, $_POST['GlobalParticipantId']);
 									}
 								}
 								if ($_POST['participantaction'] == "Remove from team") {
 									if (is_numeric($_POST['TeamParticipantId'])) {
 										//echo "Remove from team".$_POST['TeamParticipantId'];
-										RelTeamParticipantDelete($TeamId, $_POST['TeamParticipantId']);
+										RelTeamParticipantDelete($con, $TeamId, $_POST['TeamParticipantId']);
 									}
 								}
 								?>
 								<form id="teamselect" action="?page=teamadministration&sub=teams" method="post">
 									<select size="6" class="searchbox" name="TeamId" style="width: 100%; height: 250px;">
 										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadTeams();
+										$oTmp->LoadTeams($con);
 										foreach ($oTmp->Teams as &$tTeam) {
 											if ($tTeam->id == $TeamId) { ?>
 												<option value="<?php echo $tTeam->id; ?>" selected="selected"><?php echo $tTeam->Name; ?></option>
@@ -1112,7 +1113,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="submit" name="teamaction" value="Save team" />
 										<?php } else { 
 											$oTeam = new Team();
-											$oTeam->LoadTeam($TeamId); ?>
+											$oTeam->LoadTeam($con, $TeamId); ?>
 											<input type="hidden" name="TeamId" value="<?php echo $oTeam->id; ?>" />
 											<span>Team-Id: <span><?php echo $oTeam->id; ?><br />
 											<span>Name: <span><input type="text" name="teamname" style="width: 200px;" value="<?php echo $oTeam->Name; ?>" /><br />
@@ -1138,8 +1139,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="hidden" name="TeamId" value="<?php echo $TeamId; ?>" />
 											<select multiple name="TeamParticipantId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new Team();
-												$oTmp->LoadTeam($TeamId);
-												$oTmp->LoadParticipants();
+												$oTmp->LoadTeam($con, $TeamId);
+												$oTmp->LoadParticipants($con);
 												foreach ($oTmp->Participants as &$tParticipant) { ?>
 														<option value="<?php echo $tParticipant->id; ?>"><?php echo $tParticipant->Name; ?></option>
 												<?php } ?>
@@ -1154,7 +1155,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											<input type="hidden" name="TeamId" value="<?php echo $TeamId; ?>" />
 											<select size="6" class="searchbox" name="GlobalParticipantId" style="width: 100%; height: 250px;">
 												<?php $oTmp = new ManyCollections();
-												$oTmp->LoadParticipants();
+												$oTmp->LoadParticipants($con);
 												foreach ($oTmp->Participants as &$tParticipant) { ?>
 														<option value="<?php echo $tParticipant->id; ?>"><?php echo $tParticipant->Name; ?></option>
 												<?php } ?>
@@ -1181,30 +1182,30 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										$tmpParticipant->Created = $_POST['participantcreated'];
 										$tmpParticipant->Telephone = $_POST['participanttelephone'];
 										$tmpParticipant->Mail = $_POST['participantmail'];
-										$tmpParticipant->SaveParticipant();
+										$tmpParticipant->SaveParticipant($con);
 										//Search and find the GameId
 										$query = sprintf("SELECT * FROM participants WHERE participant_name='%s' AND created='%s'",
-														mysql_real_escape_string($tmpParticipant->Name),
-														mysql_real_escape_string($tmpParticipant->Created));
-										$result = mysql_query($query) or die();
-										while ($row = mysql_fetch_assoc($result)) {
+														mysqli_real_escape_string($db, $tmpParticipant->Name),
+														mysqli_real_escape_string($db, $tmpParticipant->Created));
+										$result = mysqli_query($con, $query) or die();
+										while ($row = mysqli_fetch_assoc($result)) {
 											$ParticipantId = $row['participant_id'];
 										}
 									} else {
 										$tmpParticipant = new Participant();
-										$tmpParticipant->LoadParticipant($ParticipantId);
+										$tmpParticipant->LoadParticipant($con, $ParticipantId);
 										$tmpParticipant->Name = $_POST['participantname'];
 										$tmpParticipant->Created = $_POST['participantcreated'];
 										$tmpParticipant->Telephone = $_POST['participanttelephone'];
 										$tmpParticipant->Mail = $_POST['participantmail'];
-										$tmpParticipant->SaveParticipant();
+										$tmpParticipant->SaveParticipant($con);
 									}
 								}
 								?>
 								<form id="participantselect" action="?page=teamadministration&sub=participants" method="post">
 									<select size="6" class="searchbox" name="ParticipantId" style="width: 100%; height: 250px;">
 										<?php $oTmp = new ManyCollections();
-										$oTmp->LoadParticipants();
+										$oTmp->LoadParticipants($con);
 										foreach ($oTmp->Participants as &$tParticipant) {
 											if ($tParticipant->id == $ParticipantId) { ?>
 												<option value="<?php echo $tParticipant->id; ?>" selected="selected"><?php echo $tParticipant->Name; ?></option>
@@ -1236,7 +1237,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										<input type="submit" name="participantaction" value="Save participant" />
 									<?php } else { 
 										$oParticipant = new Participant();
-										$oParticipant->LoadParticipant($ParticipantId); ?>
+										$oParticipant->LoadParticipant($con, $ParticipantId); ?>
 										<input type="hidden" name="ParticipantId" value="<?php echo $oParticipant->id; ?>" />
 										<span>Participant-Id: <span><?php echo $oParticipant->id; ?><br />
 										<span>Name: <span><input type="text" name="participantname" style="width: 200px;" value="<?php echo $oParticipant->Name; ?>" /><br />
@@ -1257,7 +1258,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 					case 'scoreadministration':
 						if ($NavigationLevel == 4) {
 							$tGame = new Game();
-							$tGame->LoadGame($_GET['game']);
+							$tGame->LoadGame($con, $_GET['game']);
 							//echo "NavigationLevel 4 - ".$tGame->Name;
 							//echo $tGame->id."<br />";
 							$EventId = $_GET['event'];
@@ -1272,7 +1273,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									if ($_POST['matchaction'] == "Save") {
 										if ($MatchMatchId == "new") {
 											$oMatch = new MatchRoundRobin();
-											//$oMatch->LoadMatch($MatchMatchId);
+											//$oMatch->LoadMatch($con, $MatchMatchId);
 											$oMatch->Gameid = $GameId;
 											$oMatch->Robotid = $MatchRobotId;
 											$oMatch->RobotVSid = $MatchRobotVsId;
@@ -1282,16 +1283,16 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$oMatch->WinnerRound2 = $_POST['matchwinnerround2'];
 											$oMatch->WinnerRound3 = $_POST['matchwinnerround3'];
 											$oMatch->Comment = $_POST['matchcomment'];
-											$oMatch->SaveMatch();
+											$oMatch->SaveMatch($con);
 											$query = sprintf("SELECT * FROM matchroundrobin WHERE started='%s'",
-															mysql_real_escape_string($oMatch->Started));
-											$result = mysql_query($query) or die();
-											while ($row = mysql_fetch_assoc($result)) {
+															mysqli_real_escape_string($db, $oMatch->Started));
+											$result = mysqli_query($con, $query) or die();
+											while ($row = mysqli_fetch_assoc($result)) {
 												$MatchMatchId = $row['id'];
 											}
 										} else {
 											$oMatch = new MatchRoundRobin();
-											$oMatch->LoadMatch($MatchMatchId);
+											$oMatch->LoadMatch($con, $MatchMatchId);
 											$oMatch->Gameid = $GameId;
 											$oMatch->Robotid = $MatchRobotId;
 											$oMatch->RobotVSid = $MatchRobotVsId;
@@ -1301,7 +1302,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$oMatch->WinnerRound2 = $_POST['matchwinnerround2'];
 											$oMatch->WinnerRound3 = $_POST['matchwinnerround3'];
 											$oMatch->Comment = $_POST['matchcomment'];
-											$oMatch->SaveMatch();
+											$oMatch->SaveMatch($con);
 										}
 									}
 								}
@@ -1316,16 +1317,16 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$oMatch->Updated = $_POST['matchupdated'];
 											$oMatch->Comments = $_POST['matchcomment'];
 											$oMatch->Score = $_POST['matchscore'];
-											$oMatch->SaveMatch();
+											$oMatch->SaveMatch($con);
 											$query = sprintf("SELECT * FROM rel_game_scoreboard_matches WHERE started='%s'",
-															mysql_real_escape_string($oMatch->Started));
-											$result = mysql_query($query) or die();
-											while ($row = mysql_fetch_assoc($result)) {
+															mysqli_real_escape_string($db, $oMatch->Started));
+											$result = mysqli_query($con, $query) or die();
+											while ($row = mysqli_fetch_assoc($result)) {
 												$MatchMatchId = $row['id'];
 											}
 										} else {
 											$oMatch = new MatchScoreboard();
-											$oMatch->LoadMatch($MatchMatchId);
+											$oMatch->LoadMatch($con, $MatchMatchId);
 											$oMatch->Gameid = $GameId;
 											$oMatch->Robotid = $MatchRobotId;
 											$oMatch->Roundid = $MatchRobotVsId;
@@ -1333,7 +1334,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 											$oMatch->Updated = $_POST['matchupdated'];
 											$oMatch->Comments = $_POST['matchcomment'];
 											$oMatch->Score = $_POST['matchscore'];
-											$oMatch->SaveMatch();
+											$oMatch->SaveMatch($con);
 										}
 									}
 								}
@@ -1344,8 +1345,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 							$oListMatchesTobe = new Collection();
 							switch ($tGame->Gametype) {
 								case 'roundrobin':
-									$tGame->LoadMatches();
-									$tGame->LoadRobots();
+									$tGame->LoadMatches($con);
+									$tGame->LoadRobots($con);
 									?><table border="1" id="RoundRobinTable" class="roundrobin">
 									<tr class="roundrobinheader"><td>&nbsp;</td><?php
 									foreach ($tGame->Robots as &$tRobot) {
@@ -1503,11 +1504,11 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										if (is_numeric($MatchMatchId)) {
 											//echo "VS ".$MatchMatchId;
 											$oRobotId = new Robot();
-											$oRobotId->LoadRobot($MatchRobotId);
+											$oRobotId->LoadRobot($con, $MatchRobotId);
 											$oRobotVsId = new Robot();
-											$oRobotVsId->LoadRobot($MatchRobotVsId);
+											$oRobotVsId->LoadRobot($con, $MatchRobotVsId);
 											$oMatch = new MatchRoundRobin();
-											$oMatch->LoadMatch($MatchMatchId);
+											$oMatch->LoadMatch($con, $MatchMatchId);
 											
 											echo '<h3>'.$oRobotId->Name.' <span style="font-size: 1.2em;">-VS-</span> '.$oRobotVsId->Name.'<span style="font-size: 0.6em;"> ['.$MatchMatchId.']</span>'.'</h3>'; ?>
 											<form action="<?php echo '?page=scoreadministration&event='.$EventId.'&tournament='.$TournamentId.'&game='.$GameId.'&matchrobotid='.$oRobotId->id.'&matchrobotvsid='.$oRobotVsId->id.'&matchmatchid='.$MatchMatchId; ?>" method="post">
@@ -1540,9 +1541,9 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										<?php
 										} else {
 											$oRobotId = new Robot();
-											$oRobotId->LoadRobot($MatchRobotId);
+											$oRobotId->LoadRobot($con, $MatchRobotId);
 											$oRobotVsId = new Robot();
-											$oRobotVsId->LoadRobot($MatchRobotVsId);
+											$oRobotVsId->LoadRobot($con, $MatchRobotVsId);
 											
 											echo '<h3>'.$oRobotId->Name." VS ".$oRobotVsId->Name.'</h3>'; ?>
 											<form action="<?php echo '?page=scoreadministration&event='.$EventId.'&tournament='.$TournamentId.'&game='.$GameId.'&matchrobotid='.$oRobotId->id.'&matchrobotvsid='.$oRobotVsId->id.'&matchmatchid='.$MatchMatchId; ?>" method="post">
@@ -1587,7 +1588,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										} else {
 											$tmpRobotScore->id = $tMatch->Robotid;
 											$tmpRobot = new Robot();
-											$tmpRobot->LoadRobot($tmpRobotScore->id);
+											$tmpRobot->LoadRobot($con, $tmpRobotScore->id);
 											$tmpRobotScore->Name = $tmpRobot->Name;
 											$oRobotsScoreTable->addItem($tmpRobotScore, $tMatch->Robotid);
 										}
@@ -1598,7 +1599,7 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										} else {
 											$tmpRobotVsScore->id = $tMatch->RobotVSid;
 											$tmpRobot = new Robot();
-											$tmpRobot->LoadRobot($tmpRobotVsScore->id);
+											$tmpRobot->LoadRobot($con, $tmpRobotVsScore->id);
 											$tmpRobotVsScore->Name = $tmpRobot->Name;
 											$oRobotsScoreTable->addItem($tmpRobotVsScore, $tMatch->RobotVSid);
 										}
@@ -1660,8 +1661,8 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										echo '<tr>';
 										echo '<td>'.$tRobotScore->id.'</td>';
 										$tmpRobot = new Robot();
-										$tmpRobot->LoadRobot($tRobotScore->id);
-										$tmpRobot->LoadTeam();
+										$tmpRobot->LoadRobot($con, $tRobotScore->id);
+										$tmpRobot->LoadTeam($con);
 										if (strlen($tmpRobot->oTeam->Name) > 0) {
 											echo '<td>'.$tRobotScore->Name.' <span class="roundrobinteamname">'.$tmpRobot->oTeam->Name.'</span>'.'</td>';
 										} else {
@@ -1680,13 +1681,13 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									
 									break;
 								case 'doubleelimination':
-									$tGame->LoadRobots();
+									$tGame->LoadRobots($con);
 									if ($_POST['doubleeliminationaction'] == "Save") {
 										if (strlen($sTemp = $_POST['hiddenjson']) > 20) {
 											$sTemp = $_POST['hiddenjson'];
 											$sTemp = substr($sTemp, strpos($sTemp, "results")+9, -1);
 											$tGame->sJson = $sTemp;
-											$tGame->SaveGame();
+											$tGame->SaveGame($con);
 											/*echo '<pre>'.$tGame->sJson.'</pre>';*/
 										}
 									}
@@ -1758,9 +1759,9 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 									<?php
 									break;
 								case 'scoreboard':
-									$tGame->LoadRobots();
-									$tGame->LoadMatches();
-									$tGame->LoadColumns();
+									$tGame->LoadRobots($con);
+									$tGame->LoadMatches($con);
+									$tGame->LoadColumns($con);
 									echo '<div id="ScoreboardDiv">';
 									echo '<table id="ScoreboardTable" border="1">';
 									echo '<thead><tr><th>Robots</th>';
@@ -1803,11 +1804,11 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										if (is_numeric($MatchMatchId)) {
 											//echo "VS ".$MatchMatchId;
 											$oRobotId = new Robot();
-											$oRobotId->LoadRobot($MatchRobotId);
+											$oRobotId->LoadRobot($con, $MatchRobotId);
 											$oRobotVsId = new ColumnRound();
-											$oRobotVsId->LoadColumn($MatchRobotVsId);
+											$oRobotVsId->LoadColumn($con, $MatchRobotVsId);
 											$oMatch = new MatchScoreboard();
-											$oMatch->LoadMatch($MatchMatchId);
+											$oMatch->LoadMatch($con, $MatchMatchId);
 											
 											echo '<h3>'.$oRobotVsId->Name.' <span style="font-size: 1.2em;">-</span> '.$oRobotId->Name.'<span style="font-size: 0.6em;"> ['.$MatchMatchId.']</span>'.'</h3>'; ?>
 											<form action="<?php echo '?page=scoreadministration&event='.$EventId.'&tournament='.$TournamentId.'&game='.$GameId.'&matchrobotid='.$oRobotId->id.'&matchrobotvsid='.$oRobotVsId->id.'&matchmatchid='.$MatchMatchId; ?>" method="post">
@@ -1823,9 +1824,9 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 										<?php
 										} else {
 											$oRobotId = new Robot();
-											$oRobotId->LoadRobot($MatchRobotId);
+											$oRobotId->LoadRobot($con, $MatchRobotId);
 											$oRobotVsId = new ColumnRound();
-											$oRobotVsId->LoadColumn($MatchRobotVsId);
+											$oRobotVsId->LoadColumn($con, $MatchRobotVsId);
 											
 											echo '<h3>'.$oRobotVsId->Name.' <span style="font-size: 1.2em;">-</span> '.$oRobotId->Name.'<span style="font-size: 0.6em;"> [new]</span>'.'</h3>'; ?>
 											<form action="<?php echo '?page=scoreadministration&event='.$EventId.'&tournament='.$TournamentId.'&game='.$GameId.'&matchrobotid='.$oRobotId->id.'&matchrobotvsid='.$oRobotVsId->id.'&matchmatchid='.$MatchMatchId; ?>" method="post">
@@ -1880,5 +1881,5 @@ if (isset($_POST['login']) && !empty($_POST['password'])) {
 	</body>
 </html>
 <?php
-mysql_close($con);
+mysqli_close($con);
 ?>

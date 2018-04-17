@@ -3,24 +3,24 @@ date_default_timezone_set('Europe/Stockholm');
 
 include 'db.php';
 
-$con = mysql_connect($dbhost, $dbuser, $dbpass);
+global $con;
+$con = mysqli_connect($dbhost, $dbuser, $dbpass, $dbdatabase);
 if (!$con)
 {
-  die('Could not connect: ' . mysql_error());
+  die('Could not connect: ' . mysqli_error());
 }
 
-@mysql_select_db($dbdatabase) or die( "Unable to select database");
 @require_once ('robotclasses.php');
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html lang="sv" xml:lang="sv" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Language" content="sv" />
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Type" content="text/html" />
+		<meta charset="UTF-8" />
 
 		<meta name="language" content="sv" />
 		<meta name="author" content="Tim Gremalm" />
-		<meta name="generator" content="The Mind of Tim Gremalm" />
 
 		<meta name="url" content="http://gremalm.se/robotsm/" />
 
@@ -196,7 +196,7 @@ if (!$con)
 					<ul>
 						<?php
 						$oMany = new ManyCollections();
-						$oMany->LoadTournaments();
+						$oMany->LoadTournaments($con);
 						foreach ($oMany->Events as &$tEvent) { ?>
 							<li class="<?php echo $sArgEvent == $tEvent->id ? 'currentmenu' : ''; ?>"><a href="?event=<?php echo $tEvent->id; ?>" title="<?php echo $tEvent->Name; ?>" alt ="<?php echo $tEvent->Name; ?>"><?php echo $tEvent->Name; ?></a></li>
 						<?php
@@ -212,8 +212,8 @@ if (!$con)
 					<ul>
 						<?php
 						$oEvent = new Event();
-						$oEvent->LoadEvent($sArgEvent);
-						$oEvent->LoadTournaments();
+						$oEvent->LoadEvent($con, $sArgEvent);
+						$oEvent->LoadTournaments($con);
 						foreach ($oEvent->Tournaments as &$tTournament) { ?>
 							<li class="<?php echo $sArgTournament == $tTournament->id ? 'currentmenu' : ''; ?>"><a href="?event=<?php echo $sArgEvent; ?>&tournament=<?php echo $tTournament->id; ?>" title="<?php echo $tTournament->Name; ?>" alt ="<?php echo $tTournament->Name; ?>"><?php echo $tTournament->Name; ?></a></li>
 						<?php
@@ -230,8 +230,8 @@ if (!$con)
 					<ul>
 						<?php
 						$oTournament = new Tournament();
-						$oTournament->LoadTournament($sArgTournament);
-						$oTournament->LoadGames();
+						$oTournament->LoadTournament($con, $sArgTournament);
+						$oTournament->LoadGames($con);
 						foreach ($oTournament->Games as &$tGame) { ?>
 							<li class="<?php echo $sArgGame == $tGame->id ? 'currentmenu' : ''; ?>"><a href="?event=<?php echo $sArgEvent; ?>&tournament=<?php echo $sArgTournament; ?>&game=<?php echo $tGame->id; ?>" title="<?php echo $tGame->Name; ?>" alt ="<?php echo $tGame->Name; ?>"><?php echo $tGame->Name; ?></a></li>
 						<?php
@@ -248,7 +248,7 @@ if (!$con)
 					<ul>
 						<?php
 						$oGame = new Game();
-						$oGame->LoadGame($sArgGame);
+						$oGame->LoadGame($con, $sArgGame);
 						switch ($oGame->Gametype) {
 							case 'roundrobin': ?>
 								<li class="<?php echo $sArgMode == '1' ? 'currentmenu' : ''; ?>"><a href="?event=<?php echo $sArgEvent; ?>&tournament=<?php echo $sArgTournament; ?>&game=<?php echo $sArgGame; ?>&mode=1" title="Round-Robin - Winning arrows" alt ="Round-Robin - Winning arrows">Round-Robin - Winning arrows</a></li>
@@ -286,14 +286,14 @@ if (!$con)
 				<?php
 				if ($NavigationLevel >= 3) {
 					$tGame = new Game();
-					$tGame->LoadGame($sArgGame);
+					$tGame->LoadGame($con, $sArgGame);
 					switch ($tGame->Gametype) {
 						case 'roundrobin':
 							switch ($sArgMode) {
 								/* Mode0=Round-Robin Table with arrows */
 								case 1:
-									$tGame->LoadMatches();
-									$tGame->LoadRobots();
+									$tGame->LoadMatches($con);
+									$tGame->LoadRobots($con);
 									if ($sArgNoHeading != 1) {
 										echo '<h1>';
 										echo $tGame->Name.' <span style="font-size:0.8em;">[Round Robin]</span>';
@@ -302,7 +302,7 @@ if (!$con)
 									?><table border="1" id="RoundRobinTable" class="roundrobin">
 									<tr class="roundrobinheader"><td>&nbsp;</td><?php
 									foreach ($tGame->Robots as &$tRobot) {
-										$tRobot->LoadTeam();
+										$tRobot->LoadTeam($con);
 										if (strlen($tRobot->oTeam->Name) > 0) {
 											echo '<td>'.$tRobot->Name.'<br /><span class="roundrobinteamname">'.$tRobot->oTeam->Name.'</span>'.'</td>';
 										} else {
@@ -421,8 +421,8 @@ if (!$con)
 									break;
 								/* Mode1=Round-Robin - Latest game */
 								case 0:
-									$tGame->LoadMatches();
-									$tGame->LoadRobots();
+									$tGame->LoadMatches($con);
+									$tGame->LoadRobots($con);
 									if ($sArgNoHeading != 1) {
 										echo '<h1>';
 										echo $tGame->Name.' <span style="font-size:0.8em;">[Round Robin]</span>';
@@ -443,7 +443,7 @@ if (!$con)
 										}
 									}
 									$tLatestMatch = new MatchRoundRobin();
-									$tLatestMatch->LoadMatch($latestId);
+									$tLatestMatch->LoadMatch($con, $latestId);
 									//echo 'latest match '.$tLatestMatch->Robotid.' VS '.$tLatestMatch->RobotVSid;
 
 									//Create the table that are showing the latest score
@@ -455,7 +455,7 @@ if (!$con)
 										} else {
 											echo '<td>';
 										}
-										$tRobot->LoadTeam();
+										$tRobot->LoadTeam($con);
 										if (strlen($tRobot->oTeam->Name) > 0) {
 											echo $tRobot->Name.'<br /><span class="roundrobinteamname">'.$tRobot->oTeam->Name.'</span>'.'</td>';
 										} else {
@@ -574,8 +574,8 @@ if (!$con)
 
 								/* Mode2=Round-Robin - Statistics */
 								case 2:
-									$tGame->LoadMatches();
-									$tGame->LoadRobots();
+									$tGame->LoadMatches($con);
+									$tGame->LoadRobots($con);
 									if ($sArgNoHeading != 1) {
 										echo '<h1>';
 										echo $tGame->Name.' <span style="font-size:0.8em;">[Round Robin]</span>';
@@ -593,7 +593,7 @@ if (!$con)
 										} else {
 											$tmpRobotScore->id = $tMatch->Robotid;
 											$tmpRobot = new Robot();
-											$tmpRobot->LoadRobot($tmpRobotScore->id);
+											$tmpRobot->LoadRobot($con, $tmpRobotScore->id);
 											$tmpRobotScore->Name = $tmpRobot->Name;
 											$oRobotsScoreTable->addItem($tmpRobotScore, $tMatch->Robotid);
 										}
@@ -604,7 +604,7 @@ if (!$con)
 										} else {
 											$tmpRobotVsScore->id = $tMatch->RobotVSid;
 											$tmpRobot = new Robot();
-											$tmpRobot->LoadRobot($tmpRobotVsScore->id);
+											$tmpRobot->LoadRobot($con, $tmpRobotVsScore->id);
 											$tmpRobotVsScore->Name = $tmpRobot->Name;
 											$oRobotsScoreTable->addItem($tmpRobotVsScore, $tMatch->RobotVSid);
 										}
@@ -666,8 +666,8 @@ if (!$con)
 									foreach ($oRobotsScoreTable as &$tRobotScore) {
 										echo '<tr>';
 										$tmpRobot = new Robot();
-										$tmpRobot->LoadRobot($tRobotScore->id);
-										$tmpRobot->LoadTeam();
+										$tmpRobot->LoadRobot($con, $tRobotScore->id);
+										$tmpRobot->LoadTeam($con);
 										if (strlen($tmpRobot->oTeam->Name) > 0) {
 											echo '<td>'.$tRobotScore->Name.' <span class="roundrobinteamname">'.$tmpRobot->oTeam->Name.'</span>'.'</td>';
 										} else {
@@ -687,8 +687,8 @@ if (!$con)
 
 								/* Mode3=Round-Robin - VS */
 								case 3:
-									$tGame->LoadMatches();
-									$tGame->LoadRobots();
+									$tGame->LoadMatches($con);
+									$tGame->LoadRobots($con);
 									if ($sArgNoHeading != 1) {
 										echo '<h1>';
 										echo $tGame->Name.' <span style="font-size:0.8em;">[Round Robin]</span>';
@@ -709,11 +709,11 @@ if (!$con)
 										}
 									}
 									$tLatestMatch = new MatchRoundRobin();
-									$tLatestMatch->LoadMatch($latestId);
+									$tLatestMatch->LoadMatch($con, $latestId);
 									//echo 'latest match '.$tLatestMatch->Robotid.' VS '.$tLatestMatch->RobotVSid;
 
 									//Load latest match
-									$tLatestMatch->LoadRobots();
+									$tLatestMatch->LoadRobots($con);
 
 									//Culculate score
 									$MatchingMatchStatus = 0;
@@ -767,8 +767,8 @@ if (!$con)
 									echo '</tr>';
 
 									//TeamHeaderVS
-									$tLatestMatch->oRobot->LoadTeam();
-									$tLatestMatch->oRobotVS->LoadTeam();
+									$tLatestMatch->oRobot->LoadTeam($con);
+									$tLatestMatch->oRobotVS->LoadTeam($con);
 									echo '<tr class="TeamVsHeader">';
 									echo '<td class="AlignRight">'.$tLatestMatch->oRobot->oTeam->Name.'</td><td></td><td class="AlignLeft">'.$tLatestMatch->oRobotVS->oTeam->Name.'</td>';
 									echo '</tr>';
@@ -800,7 +800,7 @@ if (!$con)
 									echo $tLatestMatch->oRobot->oTeam->City.'<br />';
 									echo $tLatestMatch->oRobot->oTeam->URL.'<br />';
 									if (!$tLatestMatch->oRobot->oTeam->Name == Null) {
-										$tLatestMatch->oRobot->oTeam->LoadParticipants();
+										$tLatestMatch->oRobot->oTeam->LoadParticipants($con);
 										foreach ($tLatestMatch->oRobot->oTeam->Participants as &$tParticipant) {
 											echo $tParticipant->Name.'<br />';
 										}
@@ -816,7 +816,7 @@ if (!$con)
 									echo $tLatestMatch->oRobotVS->oTeam->City.'<br />';
 									echo $tLatestMatch->oRobotVS->oTeam->URL.'<br />';
 									if (!$tLatestMatch->oRobotVS->oTeam->Name == Null) {
-										$tLatestMatch->oRobotVS->oTeam->LoadParticipants();
+										$tLatestMatch->oRobotVS->oTeam->LoadParticipants($con);
 										foreach ($tLatestMatch->oRobotVS->oTeam->Participants as &$tParticipant) {
 											echo $tParticipant->Name.'<br />';
 										}
@@ -833,7 +833,7 @@ if (!$con)
 							}
 							break;
 						case 'doubleelimination':
-							$tGame->LoadRobots();
+							$tGame->LoadRobots($con);
 							if ($sArgNoHeading != 1) {
 								echo '<h1>';
 								echo $tGame->Name.' <span style="font-size:0.8em;">[Double Elimination]</span>';
@@ -885,9 +885,9 @@ if (!$con)
 								echo $tGame->Name;
 								echo '</h1>';
 							}
-							$tGame->LoadRobots();
-							$tGame->LoadMatches();
-							$tGame->LoadColumns();
+							$tGame->LoadRobots($con);
+							$tGame->LoadMatches($con);
+							$tGame->LoadColumns($con);
 							echo '<div id="ScoreboardDiv">';
 							echo '<table id="ScoreboardTable" border="1">';
 							echo '<thead><tr><th class="ScoreboardHeadertd">Robots</th>';
@@ -902,7 +902,7 @@ if (!$con)
 								echo '<tr>';
 								echo '<td class="ScoreboardHeaderSecondarytd">';
 
-								$tRobot->LoadTeam();
+								$tRobot->LoadTeam($con);
 								if (strlen($tRobot->oTeam->Name) > 0) {
 									echo $tRobot->Name.'<br /><span class="roundrobinteamname">'.$tRobot->oTeam->Name.'</span>';
 								} else {
@@ -1013,6 +1013,5 @@ if (!$con)
 	</body>
 </html>
 <?php
-mysql_close($con);
+mysqli_close($con);
 ?>
-
